@@ -3,18 +3,18 @@
 
 -- Блоки для страницы "General information" (page_id = 1)
 INSERT INTO blocks (page_id, block_type_id, sort_order, is_active) VALUES
-(1, 1, 1, true),  -- Client: MUs6
-(1, 1, 2, true),  -- Classes
-(1, 1, 3, true),  -- Exp Rate
-(1, 1, 4, true),  -- Zodiac Exp Rate
-(1, 1, 5, true),  -- Drop Rate
-(1, 1, 6, true),  -- Zen Drop Rate
-(1, 1, 7, true),  -- Max Reset
-(1, 1, 8, true),  -- Max points by resets 0-100
-(1, 1, 9, true),  -- Max points by resets 101-1000
-(1, 1, 10, true), -- Max points from class quests
-(1, 1, 11, true), -- Max points from Noria quests
-(1, 1, 12, true); -- Max points per Zodiac levels
+(1, 1, 1, TRUE),  -- Client: MUs6
+(1, 1, 2, TRUE),  -- Classes
+(1, 1, 3, TRUE),  -- Exp Rate
+(1, 1, 4, TRUE),  -- Zodiac Exp Rate
+(1, 1, 5, TRUE),  -- Drop Rate
+(1, 1, 6, TRUE),  -- Zen Drop Rate
+(1, 1, 7, TRUE),  -- Max Reset
+(1, 1, 8, TRUE),  -- Max points by resets 0-100
+(1, 1, 9, TRUE),  -- Max points by resets 101-1000
+(1, 1, 10, TRUE), -- Max points from class quests
+(1, 1, 11, TRUE), -- Max points from Noria quests
+(1, 1, 12, TRUE); -- Max points per Zodiac levels
 
 -- Переводы блоков для "General information" (RU)
 INSERT INTO block_translations (block_id, language, content) VALUES
@@ -48,12 +48,12 @@ INSERT INTO block_translations (block_id, language, content) VALUES
 
 -- Блоки для страницы "Characters" (page_id = 2)
 INSERT INTO blocks (page_id, block_type_id, sort_order, is_active, image_url) VALUES
-(2, 2, 1, true, '/uploads/dark-wizard.png'),    -- Dark Wizard (с изображением)
-(2, 2, 2, true, '/uploads/dark-knight.png'),    -- Dark Knight
-(2, 2, 3, true, '/uploads/elf.png'),            -- Elf
-(2, 2, 4, true, '/uploads/magic-gladiator.png'), -- Magic Gladiator
-(2, 2, 5, true, '/uploads/dark-lord.png'),      -- Dark Lord
-(2, 2, 6, true, '/uploads/summoner.png');       -- Summoner
+(2, 2, 1, TRUE, '/uploads/dark-wizard.png'),    -- Dark Wizard (с изображением)
+(2, 2, 2, TRUE, '/uploads/dark-knight.png'),    -- Dark Knight
+(2, 2, 3, TRUE, '/uploads/elf.png'),            -- Elf
+(2, 2, 4, TRUE, '/uploads/magic-gladiator.png'), -- Magic Gladiator
+(2, 2, 5, TRUE, '/uploads/dark-lord.png'),      -- Dark Lord
+(2, 2, 6, TRUE, '/uploads/summoner.png');       -- Summoner
 
 -- Переводы блоков для "Characters" (RU)
 INSERT INTO block_translations (block_id, language, content) VALUES
@@ -75,11 +75,11 @@ INSERT INTO block_translations (block_id, language, content) VALUES
 
 -- Блоки для страницы "Unique features" (page_id = 4) - Reset details
 INSERT INTO blocks (page_id, block_type_id, sort_order, is_active) VALUES
-(4, 1, 1, true),  -- Reset details header
-(4, 1, 2, true),  -- Mana replaced
-(4, 1, 3, true),  -- Zen
-(4, 1, 4, true),  -- Emeralds
-(4, 1, 5, true);  -- Diamonds
+(4, 1, 1, TRUE),  -- Reset details header
+(4, 1, 2, TRUE),  -- Mana replaced
+(4, 1, 3, TRUE),  -- Zen
+(4, 1, 4, TRUE),  -- Emeralds
+(4, 1, 5, TRUE);  -- Diamonds
 
 -- Переводы блоков для "Unique features" (RU)
 INSERT INTO block_translations (block_id, language, content) VALUES
@@ -96,4 +96,3 @@ INSERT INTO block_translations (block_id, language, content) VALUES
 (21, 'en', 'Zen'),
 (22, 'en', 'Emeralds'),
 (23, 'en', 'Diamonds');
-

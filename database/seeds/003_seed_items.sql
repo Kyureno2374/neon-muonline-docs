@@ -1,12 +1,12 @@
 -- Добавление тестовых предметов в Items Database
 INSERT INTO items (slug, image_url, thumbnail_url, is_active) VALUES
-('dark-wizard', '/uploads/items/dark-wizard.png', '/uploads/items/dark-wizard_thumb.png', true),
-('dark-knight', '/uploads/items/dark-knight.png', '/uploads/items/dark-knight_thumb.png', true),
-('elf', '/uploads/items/elf.png', '/uploads/items/elf_thumb.png', true),
-('equalizer-buff', '/uploads/items/equalizer.png', '/uploads/items/equalizer_thumb.png', true),
-('excalibur-sword', '/uploads/items/excalibur.png', '/uploads/items/excalibur_thumb.png', true),
-('dragon-armor', '/uploads/items/dragon-armor.png', '/uploads/items/dragon-armor_thumb.png', true),
-('mythril-ore', '/uploads/items/mythril-ore.png', '/uploads/items/mythril-ore_thumb.png', true);
+('dark-wizard', '/uploads/items/dark-wizard.png', '/uploads/items/dark-wizard_thumb.png', TRUE),
+('dark-knight', '/uploads/items/dark-knight.png', '/uploads/items/dark-knight_thumb.png', TRUE),
+('elf', '/uploads/items/elf.png', '/uploads/items/elf_thumb.png', TRUE),
+('equalizer-buff', '/uploads/items/equalizer.png', '/uploads/items/equalizer_thumb.png', TRUE),
+('excalibur-sword', '/uploads/items/excalibur.png', '/uploads/items/excalibur_thumb.png', TRUE),
+('dragon-armor', '/uploads/items/dragon-armor.png', '/uploads/items/dragon-armor_thumb.png', TRUE),
+('mythril-ore', '/uploads/items/mythril-ore.png', '/uploads/items/mythril-ore_thumb.png', TRUE);
 
 -- Переводы предметов на русский
 INSERT INTO item_translations (item_id, language, name, description) VALUES
@@ -27,4 +27,3 @@ INSERT INTO item_translations (item_id, language, name, description) VALUES
 (5, 'en', 'Excalibur Sword', 'Legendary sword with incredible attack power'),
 (6, 'en', 'Dragon Armor', 'Protection forged from ancient dragon scales'),
 (7, 'en', 'Mythril Ore', 'Rare material for crafting legendary weapons');
-

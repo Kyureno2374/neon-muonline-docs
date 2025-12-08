@@ -29,13 +29,13 @@ class BlocksModel {
                 btrans.language as lang
             FROM blocks b
             LEFT JOIN block_types bt ON b.block_type_id = bt.id
-            LEFT JOIN block_translations btrans ON b.id = btrans.block_id AND btrans.language = $1
-            WHERE b.page_id = $2 AND b.is_active = TRUE
+            LEFT JOIN block_translations btrans ON b.id = btrans.block_id AND btrans.language = ?
+            WHERE b.page_id = ? AND b.is_active = TRUE
             ORDER BY b.sort_order ASC, b.id ASC
         `;
         
-        const result = await pool.query(query, [lang, pageId]);
-        return result.rows;
+        const [rows] = await pool.query(query, [lang, pageId]);
+        return rows;
     }
 
     /**
@@ -62,13 +62,13 @@ class BlocksModel {
             FROM blocks b
             INNER JOIN pages p ON b.page_id = p.id
             LEFT JOIN block_types bt ON b.block_type_id = bt.id
-            LEFT JOIN block_translations btrans ON b.id = btrans.block_id AND btrans.language = $1
-            WHERE p.slug = $2 AND b.is_active = TRUE AND p.is_active = TRUE
+            LEFT JOIN block_translations btrans ON b.id = btrans.block_id AND btrans.language = ?
+            WHERE p.slug = ? AND b.is_active = TRUE AND p.is_active = TRUE
             ORDER BY b.sort_order ASC, b.id ASC
         `;
         
-        const result = await pool.query(query, [lang, pageSlug]);
-        return result.rows;
+        const [rows] = await pool.query(query, [lang, pageSlug]);
+        return rows;
     }
 
     /**
@@ -94,12 +94,12 @@ class BlocksModel {
                 btrans.language as lang
             FROM blocks b
             LEFT JOIN block_types bt ON b.block_type_id = bt.id
-            LEFT JOIN block_translations btrans ON b.id = btrans.block_id AND btrans.language = $1
-            WHERE b.id = $2 AND b.is_active = TRUE
+            LEFT JOIN block_translations btrans ON b.id = btrans.block_id AND btrans.language = ?
+            WHERE b.id = ? AND b.is_active = TRUE
         `;
         
-        const result = await pool.query(query, [lang, id]);
-        return result.rows[0] || null;
+        const [rows] = await pool.query(query, [lang, id]);
+        return rows[0] || null;
     }
 
     /**
@@ -113,10 +113,9 @@ class BlocksModel {
             ORDER BY id ASC
         `;
         
-        const result = await pool.query(query);
-        return result.rows;
+        const [rows] = await pool.query(query);
+        return rows;
     }
 }
 
 export default new BlocksModel();
-

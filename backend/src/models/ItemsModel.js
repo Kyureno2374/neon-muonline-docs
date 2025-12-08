@@ -38,47 +38,47 @@ class ItemsModel {
                 it.description,
                 it.language as lang
             FROM items i
-            LEFT JOIN item_translations it ON i.id = it.item_id AND it.language = $1
+            LEFT JOIN item_translations it ON i.id = it.item_id AND it.language = ?
             WHERE i.is_active = TRUE
         `;
 
         const params = [lang];
-        let paramIndex = 2;
 
-        // Добавление поиска
+        // Добавление поиска (используем LIKE вместо ILIKE)
         if (search) {
-            query += ` AND (it.name ILIKE $${paramIndex} OR it.description ILIKE $${paramIndex})`;
-            params.push(`%${search}%`);
-            paramIndex++;
+            query += ` AND (LOWER(it.name) LIKE LOWER(?) OR LOWER(it.description) LIKE LOWER(?))`;
+            const searchParam = `%${search}%`;
+            params.push(searchParam, searchParam);
         }
 
         // Сортировка и пагинация
-        query += ` ORDER BY i.id ASC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+        query += ` ORDER BY i.id ASC LIMIT ? OFFSET ?`;
         params.push(limit, offset);
 
         // Запрос данных
-        const result = await pool.query(query, params);
+        const [rows] = await pool.query(query, params);
 
         // Подсчет общего количества
         let countQuery = `
             SELECT COUNT(DISTINCT i.id) as total
             FROM items i
-            LEFT JOIN item_translations it ON i.id = it.item_id AND it.language = $1
+            LEFT JOIN item_translations it ON i.id = it.item_id AND it.language = ?
             WHERE i.is_active = TRUE
         `;
         const countParams = [lang];
 
         if (search) {
-            countQuery += ` AND (it.name ILIKE $2 OR it.description ILIKE $2)`;
-            countParams.push(`%${search}%`);
+            countQuery += ` AND (LOWER(it.name) LIKE LOWER(?) OR LOWER(it.description) LIKE LOWER(?))`;
+            const searchParam = `%${search}%`;
+            countParams.push(searchParam, searchParam);
         }
 
-        const countResult = await pool.query(countQuery, countParams);
-        const total = parseInt(countResult.rows[0].total);
+        const [countRows] = await pool.query(countQuery, countParams);
+        const total = parseInt(countRows[0].total);
         const totalPages = Math.ceil(total / limit);
 
         return {
-            items: result.rows,
+            items: rows,
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
@@ -109,12 +109,12 @@ class ItemsModel {
                 it.description,
                 it.language as lang
             FROM items i
-            LEFT JOIN item_translations it ON i.id = it.item_id AND it.language = $1
-            WHERE i.slug = $2 AND i.is_active = TRUE
+            LEFT JOIN item_translations it ON i.id = it.item_id AND it.language = ?
+            WHERE i.slug = ? AND i.is_active = TRUE
         `;
         
-        const result = await pool.query(query, [lang, slug]);
-        return result.rows[0] || null;
+        const [rows] = await pool.query(query, [lang, slug]);
+        return rows[0] || null;
     }
 
     /**
@@ -136,12 +136,12 @@ class ItemsModel {
                 it.description,
                 it.language as lang
             FROM items i
-            LEFT JOIN item_translations it ON i.id = it.item_id AND it.language = $1
-            WHERE i.id = $2 AND i.is_active = TRUE
+            LEFT JOIN item_translations it ON i.id = it.item_id AND it.language = ?
+            WHERE i.id = ? AND i.is_active = TRUE
         `;
         
-        const result = await pool.query(query, [lang, id]);
-        return result.rows[0] || null;
+        const [rows] = await pool.query(query, [lang, id]);
+        return rows[0] || null;
     }
 
     /**
@@ -150,11 +150,10 @@ class ItemsModel {
      * @returns {Promise<boolean>} - true если предмет существует
      */
     async existsBySlug(slug) {
-        const query = 'SELECT EXISTS(SELECT 1 FROM items WHERE slug = $1) as exists';
-        const result = await pool.query(query, [slug]);
-        return result.rows[0].exists;
+        const query = 'SELECT EXISTS(SELECT 1 FROM items WHERE slug = ?) as `exists`';
+        const [rows] = await pool.query(query, [slug]);
+        return !!rows[0].exists;
     }
 }
 
 export default new ItemsModel();
-

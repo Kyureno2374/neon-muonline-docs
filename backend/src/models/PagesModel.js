@@ -21,13 +21,13 @@ class PagesModel {
                 pt.name as title,
                 pt.language as lang
             FROM pages p
-            LEFT JOIN page_translations pt ON p.id = pt.page_id AND pt.language = $1
+            LEFT JOIN page_translations pt ON p.id = pt.page_id AND pt.language = ?
             WHERE p.is_active = TRUE
             ORDER BY p.sort_order ASC, p.id ASC
         `;
         
-        const result = await pool.query(query, [lang]);
-        return result.rows;
+        const [rows] = await pool.query(query, [lang]);
+        return rows;
     }
 
     /**
@@ -48,12 +48,12 @@ class PagesModel {
                 pt.name as title,
                 pt.language as lang
             FROM pages p
-            LEFT JOIN page_translations pt ON p.id = pt.page_id AND pt.language = $1
-            WHERE p.slug = $2 AND p.is_active = TRUE
+            LEFT JOIN page_translations pt ON p.id = pt.page_id AND pt.language = ?
+            WHERE p.slug = ? AND p.is_active = TRUE
         `;
         
-        const result = await pool.query(query, [lang, slug]);
-        return result.rows[0] || null;
+        const [rows] = await pool.query(query, [lang, slug]);
+        return rows[0] || null;
     }
 
     /**
@@ -74,12 +74,12 @@ class PagesModel {
                 pt.name as title,
                 pt.language as lang
             FROM pages p
-            LEFT JOIN page_translations pt ON p.id = pt.page_id AND pt.language = $1
-            WHERE p.id = $2 AND p.is_active = TRUE
+            LEFT JOIN page_translations pt ON p.id = pt.page_id AND pt.language = ?
+            WHERE p.id = ? AND p.is_active = TRUE
         `;
         
-        const result = await pool.query(query, [lang, id]);
-        return result.rows[0] || null;
+        const [rows] = await pool.query(query, [lang, id]);
+        return rows[0] || null;
     }
 
     /**
@@ -88,9 +88,9 @@ class PagesModel {
      * @returns {Promise<boolean>} - true если страница существует
      */
     async existsBySlug(slug) {
-        const query = 'SELECT EXISTS(SELECT 1 FROM pages WHERE slug = $1) as exists';
-        const result = await pool.query(query, [slug]);
-        return result.rows[0].exists;
+        const query = 'SELECT EXISTS(SELECT 1 FROM pages WHERE slug = ?) as `exists`';
+        const [rows] = await pool.query(query, [slug]);
+        return !!rows[0].exists;
     }
 
     /**
@@ -104,12 +104,17 @@ class PagesModel {
     async createPage({ slug, icon, sort_order = 999 }) {
         const query = `
             INSERT INTO pages (slug, icon, sort_order, is_active)
-            VALUES ($1, $2, $3, TRUE)
-            RETURNING id, slug, icon, sort_order, is_active, created_at, updated_at
+            VALUES (?, ?, ?, TRUE)
         `;
         
-        const result = await pool.query(query, [slug, icon, sort_order]);
-        return result.rows[0];
+        const [result] = await pool.query(query, [slug, icon, sort_order]);
+        
+        // Получаем созданную страницу
+        const [rows] = await pool.query(
+            'SELECT * FROM pages WHERE id = ?',
+            [result.insertId]
+        );
+        return rows[0];
     }
 
     /**
@@ -121,22 +126,21 @@ class PagesModel {
     async updatePage(id, { slug, icon, sort_order, is_active }) {
         const fields = [];
         const values = [];
-        let paramCount = 1;
 
         if (slug !== undefined) {
-            fields.push(`slug = $${paramCount++}`);
+            fields.push('slug = ?');
             values.push(slug);
         }
         if (icon !== undefined) {
-            fields.push(`icon = $${paramCount++}`);
+            fields.push('icon = ?');
             values.push(icon);
         }
         if (sort_order !== undefined) {
-            fields.push(`sort_order = $${paramCount++}`);
+            fields.push('sort_order = ?');
             values.push(sort_order);
         }
         if (is_active !== undefined) {
-            fields.push(`is_active = $${paramCount++}`);
+            fields.push('is_active = ?');
             values.push(is_active);
         }
 
@@ -144,18 +148,19 @@ class PagesModel {
             return null;
         }
 
-        fields.push(`updated_at = NOW()`);
         values.push(id);
 
         const query = `
             UPDATE pages
             SET ${fields.join(', ')}
-            WHERE id = $${paramCount}
-            RETURNING id, slug, icon, sort_order, is_active, created_at, updated_at
+            WHERE id = ?
         `;
 
-        const result = await pool.query(query, values);
-        return result.rows[0] || null;
+        await pool.query(query, values);
+        
+        // Получаем обновленную страницу
+        const [rows] = await pool.query('SELECT * FROM pages WHERE id = ?', [id]);
+        return rows[0] || null;
     }
 
     /**
@@ -166,13 +171,12 @@ class PagesModel {
     async deletePage(id) {
         const query = `
             UPDATE pages 
-            SET is_active = FALSE, updated_at = NOW()
-            WHERE id = $1
-            RETURNING id
+            SET is_active = FALSE
+            WHERE id = ?
         `;
         
-        const result = await pool.query(query, [id]);
-        return result.rows.length > 0;
+        const [result] = await pool.query(query, [id]);
+        return result.affectedRows > 0;
     }
 
     /**
@@ -184,12 +188,12 @@ class PagesModel {
         const query = `
             SELECT page_id, language, name, created_at, updated_at
             FROM page_translations
-            WHERE page_id = $1
+            WHERE page_id = ?
             ORDER BY language ASC
         `;
         
-        const result = await pool.query(query, [pageId]);
-        return result.rows;
+        const [rows] = await pool.query(query, [pageId]);
+        return rows;
     }
 
     /**
@@ -202,12 +206,17 @@ class PagesModel {
     async createPageTranslation(pageId, language, name) {
         const query = `
             INSERT INTO page_translations (page_id, language, name)
-            VALUES ($1, $2, $3)
-            RETURNING page_id, language, name, created_at, updated_at
+            VALUES (?, ?, ?)
         `;
         
-        const result = await pool.query(query, [pageId, language, name]);
-        return result.rows[0];
+        await pool.query(query, [pageId, language, name]);
+        
+        // Получаем созданный перевод
+        const [rows] = await pool.query(
+            'SELECT * FROM page_translations WHERE page_id = ? AND language = ?',
+            [pageId, language]
+        );
+        return rows[0];
     }
 
     /**
@@ -220,13 +229,22 @@ class PagesModel {
     async updatePageTranslation(pageId, language, name) {
         const query = `
             UPDATE page_translations
-            SET name = $3, updated_at = NOW()
-            WHERE page_id = $1 AND language = $2
-            RETURNING page_id, language, name, created_at, updated_at
+            SET name = ?
+            WHERE page_id = ? AND language = ?
         `;
         
-        const result = await pool.query(query, [pageId, language, name]);
-        return result.rows[0] || null;
+        const [result] = await pool.query(query, [name, pageId, language]);
+        
+        if (result.affectedRows === 0) {
+            return null;
+        }
+        
+        // Получаем обновленный перевод
+        const [rows] = await pool.query(
+            'SELECT * FROM page_translations WHERE page_id = ? AND language = ?',
+            [pageId, language]
+        );
+        return rows[0];
     }
 
     /**
@@ -238,14 +256,12 @@ class PagesModel {
     async deletePageTranslation(pageId, language) {
         const query = `
             DELETE FROM page_translations
-            WHERE page_id = $1 AND language = $2
-            RETURNING page_id
+            WHERE page_id = ? AND language = ?
         `;
         
-        const result = await pool.query(query, [pageId, language]);
-        return result.rows.length > 0;
+        const [result] = await pool.query(query, [pageId, language]);
+        return result.affectedRows > 0;
     }
 }
 
 export default new PagesModel();
-

@@ -24,11 +24,11 @@ class AdminsModel {
                 created_at,
                 updated_at
             FROM admins
-            WHERE email = $1
+            WHERE email = ?
         `;
         
-        const result = await pool.query(query, [email]);
-        return result.rows[0] || null;
+        const [rows] = await pool.query(query, [email]);
+        return rows[0] || null;
     }
 
     /**
@@ -45,11 +45,11 @@ class AdminsModel {
                 created_at,
                 updated_at
             FROM admins
-            WHERE id = $1
+            WHERE id = ?
         `;
         
-        const result = await pool.query(query, [id]);
-        return result.rows[0] || null;
+        const [rows] = await pool.query(query, [id]);
+        return rows[0] || null;
     }
 
     /**
@@ -76,12 +76,17 @@ class AdminsModel {
         
         const query = `
             INSERT INTO admins (email, password_hash, name)
-            VALUES ($1, $2, $3)
-            RETURNING id, email, name, created_at, updated_at
+            VALUES (?, ?, ?)
         `;
         
-        const result = await pool.query(query, [email, hashedPassword, name]);
-        return result.rows[0];
+        const [result] = await pool.query(query, [email, hashedPassword, name]);
+        
+        // Получаем созданного админа
+        const [rows] = await pool.query(
+            'SELECT id, email, name, created_at, updated_at FROM admins WHERE id = ?',
+            [result.insertId]
+        );
+        return rows[0];
     }
 
     /**
@@ -93,34 +98,36 @@ class AdminsModel {
     async updateAdmin(id, updateData) {
         const { email, password, name } = updateData;
         
-        let query = 'UPDATE admins SET updated_at = CURRENT_TIMESTAMP';
+        const fields = [];
         const params = [];
-        let paramIndex = 1;
         
         if (email) {
-            query += `, email = $${paramIndex}`;
+            fields.push('email = ?');
             params.push(email);
-            paramIndex++;
         }
         
         if (password) {
             const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-            query += `, password_hash = $${paramIndex}`;
+            fields.push('password_hash = ?');
             params.push(hashedPassword);
-            paramIndex++;
         }
         
         if (name) {
-            query += `, name = $${paramIndex}`;
+            fields.push('name = ?');
             params.push(name);
-            paramIndex++;
         }
         
-        query += ` WHERE id = $${paramIndex} RETURNING id, email, name, created_at, updated_at`;
+        if (fields.length === 0) {
+            return await this.findById(id);
+        }
+        
         params.push(id);
         
-        const result = await pool.query(query, params);
-        return result.rows[0];
+        const query = `UPDATE admins SET ${fields.join(', ')} WHERE id = ?`;
+        await pool.query(query, params);
+        
+        // Получаем обновленного админа
+        return await this.findById(id);
     }
 
     /**
@@ -129,9 +136,9 @@ class AdminsModel {
      * @returns {Promise<boolean>} - true если удален
      */
     async deleteAdmin(id) {
-        const query = 'DELETE FROM admins WHERE id = $1';
-        const result = await pool.query(query, [id]);
-        return result.rowCount > 0;
+        const query = 'DELETE FROM admins WHERE id = ?';
+        const [result] = await pool.query(query, [id]);
+        return result.affectedRows > 0;
     }
 
     /**
@@ -150,10 +157,9 @@ class AdminsModel {
             ORDER BY created_at DESC
         `;
         
-        const result = await pool.query(query);
-        return result.rows;
+        const [rows] = await pool.query(query);
+        return rows;
     }
 }
 
 export default new AdminsModel();
-

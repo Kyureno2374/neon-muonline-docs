@@ -1,16 +1,16 @@
 -- Добавление страниц сайта (согласно Figma дизайну)
 INSERT INTO pages (slug, icon, sort_order, is_active) VALUES
-('general-information', '📋', 1, true),
-('characters', '⚔️', 2, true),
-('game-interface', '🎮', 3, true),
-('unique-features', '✨', 4, true),
-('crafting', '🔨', 5, true),
-('equipment', '🛡️', 6, true),
-('monster-info', '👹', 7, true),
-('events', '🎉', 8, true),
-('quests', '📜', 9, true),
-('donate-features', '💎', 10, true),
-('help-server-grow', '❤️', 11, true);
+('general-information', '📋', 1, TRUE),
+('characters', '⚔️', 2, TRUE),
+('game-interface', '🎮', 3, TRUE),
+('unique-features', '✨', 4, TRUE),
+('crafting', '🔨', 5, TRUE),
+('equipment', '🛡️', 6, TRUE),
+('monster-info', '👹', 7, TRUE),
+('events', '🎉', 8, TRUE),
+('quests', '📜', 9, TRUE),
+('donate-features', '💎', 10, TRUE),
+('help-server-grow', '❤️', 11, TRUE);
 
 -- Переводы страниц на русский
 INSERT INTO page_translations (page_id, language, name) VALUES
@@ -39,4 +39,3 @@ INSERT INTO page_translations (page_id, language, name) VALUES
 (9, 'en', 'Quests'),
 (10, 'en', 'Donate features'),
 (11, 'en', 'Help the server grow');
-
