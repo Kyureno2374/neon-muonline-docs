@@ -20,6 +20,7 @@ import { requestLogger } from './middleware/requestLogger.js';
 import pagesRouter from './routes/pages.js';
 import itemsRouter from './routes/items.js';
 import authRouter from './routes/auth.js';
+import adminPagesRouter from './routes/admin/pages.js';
 
 // Создание Express приложения
 const app = express();
@@ -62,6 +63,7 @@ app.get('/api/health', function healthCheck(req, res) {
 app.use('/api/pages', pagesRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/admin/auth', authRouter);
+app.use('/api/admin', adminPagesRouter);
 
 // =====================================
 // ERROR HANDLING
