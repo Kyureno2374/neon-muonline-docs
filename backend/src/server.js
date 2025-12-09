@@ -21,6 +21,8 @@ import pagesRouter from './routes/pages.js';
 import itemsRouter from './routes/items.js';
 import authRouter from './routes/auth.js';
 import adminPagesRouter from './routes/admin/pages.js';
+import adminBlocksRouter from './routes/admin/blocks.js';
+import adminItemsRouter from './routes/admin/items.js';
 
 // Создание Express приложения
 const app = express();
@@ -64,6 +66,8 @@ app.use('/api/pages', pagesRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/admin/auth', authRouter);
 app.use('/api/admin', adminPagesRouter);
+app.use('/api/admin', adminBlocksRouter);
+app.use('/api/admin', adminItemsRouter);
 
 // =====================================
 // ERROR HANDLING
