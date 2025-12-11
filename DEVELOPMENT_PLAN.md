@@ -110,7 +110,7 @@
 
 ### Задачи
 
-#### 2.1 Аутентификация и авторизация
+#### 2.1 Аутентификация и авторизация ✅
 
 - [ ] Установка зависимостей: `bcrypt`, `jsonwebtoken`
 - [ ] Модель AdminsModel с методами:
@@ -127,7 +127,7 @@
   - `POST /api/admin/auth/logout` - выход
   - `GET /api/admin/auth/me` - получение данных текущего админа
 
-#### 2.2 CRUD API для Pages (страницы сайта)
+#### 2.2 CRUD API для Pages (страницы сайта) ✅
 
 - [ ] Контроллер `AdminPagesController.js`
 - [ ] Методы в `PagesModel`:
@@ -145,8 +145,8 @@
   - `PUT /api/admin/pages/:id/translations/:lang` - обновление перевода
   - `DELETE /api/admin/pages/:id/translations/:lang` - удаление перевода
 - [ ] Валидация: slug (уникальность), icon, sort_order
-
-#### 2.3 CRUD API для Blocks (блоки контента)
+ 
+#### 2.3 CRUD API для Blocks (блоки контента) ✅
 
 - [ ] Контроллер `AdminBlocksController.js`
 - [ ] Методы в `BlocksModel`:
@@ -164,7 +164,7 @@
   - `PUT /api/admin/blocks/:id/translations/:lang` - обновление перевода
 - [ ] Валидация: block_type_id, page_id, sort_order
 
-#### 2.4 CRUD API для Items (предметы)
+#### 2.4 CRUD API для Items (предметы) ✅
 
 - [ ] Контроллер `AdminItemsController.js`
 - [ ] Методы в `ItemsModel`:
@@ -232,23 +232,26 @@
 
 #### 2.8 Логирование действий
 
-- [ ] Установка: `winston`
-- [ ] Логирование в файлы:
-  - `logs/error.log` - ошибки
-  - `logs/auth.log` - попытки входа
-  - `logs/admin.log` - CRUD действия админов
-- [ ] Формат логов: timestamp, admin_id, action, details
-- [ ] Ротация логов по дате
+- [x] Установка: `winston`, `winston-daily-rotate-file`
+- [x] Логирование в файлы:
+  - `logs/error-YYYY-MM-DD.log` - ошибки сервера (500+)
+  - `logs/auth-YYYY-MM-DD.log` - попытки входа (успешные и неудачные)
+  - `logs/admin-YYYY-MM-DD.log` - CRUD действия админов
+  - `logs/combined-YYYY-MM-DD.log` - все логи
+- [x] Формат логов: timestamp, admin_id, action, details, resource, resource_id
+- [x] Ротация логов по дате (30 дней для auth/admin, 14 дней для combined)
+- [x] Интеграция в authMiddleware (автоматическое логирование)
+- [x] Тест логирования: `backend/test-logging.js`
 
 ### Критерии приёмки этапа 2
 
 - ✅ JWT аутентификация работает (login, refresh, logout)
 - ✅ Все CRUD операции реализованы для Pages, Blocks, Items, Languages
 - ✅ Загрузка изображений с генерацией миниатюр работает
-- ✅ Валидация данных на сервере
+- ✅ Валидация данных на сервере (requireFields, validateSlug, validateEmail, validateLanguageCode, sanitizeHtml и др.)
 - ✅ Все админские роуты защищены через JWT middleware
-- ✅ Логирование действий настроено
-- ✅ API протестирован (Postman/автотесты)
+- ✅ Логирование действий настроено (winston с ротацией по дате)
+- ✅ API протестирован (37+ автотестов, ~95% success rate)
 
 ---
 

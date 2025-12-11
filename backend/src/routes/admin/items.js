@@ -6,6 +6,15 @@
 import express from 'express';
 import AdminItemsController from '../../controllers/AdminItemsController.js';
 import { authMiddleware } from '../../middleware/authMiddleware.js';
+import {
+    requireFields,
+    validateSlug,
+    validateLength,
+    validateId,
+    validateLanguageCode,
+    sanitizeHtml,
+    validate
+} from '../../middleware/validationMiddleware.js';
 
 const router = express.Router();
 
@@ -13,17 +22,80 @@ const router = express.Router();
 router.use(authMiddleware);
 
 // CRUD операции с предметами
-router.get('/items', AdminItemsController.getAllItems.bind(AdminItemsController));
-router.get('/items/:id', AdminItemsController.getItemById.bind(AdminItemsController));
-router.post('/items', AdminItemsController.createItem.bind(AdminItemsController));
-router.put('/items/:id', AdminItemsController.updateItem.bind(AdminItemsController));
-router.delete('/items/:id', AdminItemsController.deleteItem.bind(AdminItemsController));
+router.get('', AdminItemsController.getAllItems.bind(AdminItemsController));
+
+router.get(
+    '/:id',
+    validateId('id'),
+    AdminItemsController.getItemById.bind(AdminItemsController)
+);
+
+router.post(
+    '',
+    validate(
+        requireFields(['slug']),
+        validateSlug('slug'),
+        validateLength('slug', 2, 100)
+    ),
+    AdminItemsController.createItem.bind(AdminItemsController)
+);
+
+router.put(
+    '/:id',
+    validate(
+        validateId('id'),
+        validateSlug('slug'),
+        validateLength('slug', 2, 100)
+    ),
+    AdminItemsController.updateItem.bind(AdminItemsController)
+);
+
+router.delete(
+    '/:id',
+    validateId('id'),
+    AdminItemsController.deleteItem.bind(AdminItemsController)
+);
 
 // Управление переводами предметов
-router.get('/items/:id/translations', AdminItemsController.getItemTranslations.bind(AdminItemsController));
-router.post('/items/:id/translations', AdminItemsController.createItemTranslation.bind(AdminItemsController));
-router.put('/items/:id/translations/:lang', AdminItemsController.updateItemTranslation.bind(AdminItemsController));
-router.delete('/items/:id/translations/:lang', AdminItemsController.deleteItemTranslation.bind(AdminItemsController));
+router.get(
+    '/:id/translations',
+    validateId('id'),
+    AdminItemsController.getItemTranslations.bind(AdminItemsController)
+);
+
+router.post(
+    '/:id/translations',
+    validate(
+        validateId('id'),
+        requireFields(['language', 'name']),
+        validateLanguageCode('language'),
+        validateLength('name', 1, 200),
+        validateLength('description', 0, 1000),
+        sanitizeHtml('name', 'description')
+    ),
+    AdminItemsController.createItemTranslation.bind(AdminItemsController)
+);
+
+router.put(
+    '/:id/translations/:lang',
+    validate(
+        validateId('id'),
+        validateLanguageCode('lang'),
+        validateLength('name', 1, 200),
+        validateLength('description', 0, 1000),
+        sanitizeHtml('name', 'description')
+    ),
+    AdminItemsController.updateItemTranslation.bind(AdminItemsController)
+);
+
+router.delete(
+    '/:id/translations/:lang',
+    validate(
+        validateId('id'),
+        validateLanguageCode('lang')
+    ),
+    AdminItemsController.deleteItemTranslation.bind(AdminItemsController)
+);
 
 export default router;
 

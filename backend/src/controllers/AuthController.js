@@ -4,6 +4,7 @@
 
 import AdminsModel from '../models/AdminsModel.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwtUtils.js';
+import { logAuthAttempt, logLogout } from '../utils/logger.js';
 
 class AuthController {
     /**
@@ -29,6 +30,7 @@ class AuthController {
             const admin = await AdminsModel.findByEmail(email);
 
             if (!admin) {
+                logAuthAttempt(email, false, req.ip, 'User not found');
                 return res.status(401).json({
                     success: false,
                     error: {
@@ -42,6 +44,7 @@ class AuthController {
             const isPasswordValid = await AdminsModel.verifyPassword(password, admin.password);
 
             if (!isPasswordValid) {
+                logAuthAttempt(email, false, req.ip, 'Invalid password');
                 return res.status(401).json({
                     success: false,
                     error: {
@@ -63,6 +66,7 @@ class AuthController {
 
             // Логирование успешного входа
             console.log(`✅ Admin logged in: ${admin.email} (ID: ${admin.id})`);
+            logAuthAttempt(email, true, req.ip);
 
             // Возвращаем данные админа и токены
             res.json({
@@ -157,6 +161,7 @@ class AuthController {
             // Клиент должен удалить токены из localStorage/cookies
 
             console.log(`🚪 Admin logged out: ${req.admin.email} (ID: ${req.admin.id})`);
+            logLogout(req.admin.id, req.admin.email, req.ip);
 
             res.json({
                 success: true,

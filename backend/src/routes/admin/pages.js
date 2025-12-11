@@ -6,6 +6,15 @@
 import express from 'express';
 import AdminPagesController from '../../controllers/AdminPagesController.js';
 import { authMiddleware } from '../../middleware/authMiddleware.js';
+import {
+    requireFields,
+    validateSlug,
+    validateLength,
+    validateLanguageCode,
+    validateId,
+    sanitizeHtml,
+    validate
+} from '../../middleware/validationMiddleware.js';
 
 const router = express.Router();
 
@@ -13,15 +22,74 @@ const router = express.Router();
 router.use(authMiddleware);
 
 // CRUD операции со страницами
-router.post('/pages', AdminPagesController.createPage.bind(AdminPagesController));
-router.put('/pages/:id', AdminPagesController.updatePage.bind(AdminPagesController));
-router.delete('/pages/:id', AdminPagesController.deletePage.bind(AdminPagesController));
+router.post(
+    '/',
+    validate(
+        requireFields(['slug', 'icon']),
+        validateSlug('slug'),
+        validateLength('slug', 2, 100),
+        validateLength('icon', 1, 50),
+        sanitizeHtml('icon')
+    ),
+    AdminPagesController.createPage.bind(AdminPagesController)
+);
+
+router.put(
+    '/:id',
+    validate(
+        validateId('id'),
+        validateSlug('slug'),
+        validateLength('slug', 2, 100),
+        validateLength('icon', 1, 50),
+        sanitizeHtml('icon')
+    ),
+    AdminPagesController.updatePage.bind(AdminPagesController)
+);
+
+router.delete(
+    '/:id',
+    validateId('id'),
+    AdminPagesController.deletePage.bind(AdminPagesController)
+);
 
 // Управление переводами страниц
-router.get('/pages/:id/translations', AdminPagesController.getPageTranslations.bind(AdminPagesController));
-router.post('/pages/:id/translations', AdminPagesController.createPageTranslation.bind(AdminPagesController));
-router.put('/pages/:id/translations/:lang', AdminPagesController.updatePageTranslation.bind(AdminPagesController));
-router.delete('/pages/:id/translations/:lang', AdminPagesController.deletePageTranslation.bind(AdminPagesController));
+router.get(
+    '/:id/translations',
+    validateId('id'),
+    AdminPagesController.getPageTranslations.bind(AdminPagesController)
+);
+
+router.post(
+    '/:id/translations',
+    validate(
+        validateId('id'),
+        requireFields(['language', 'name']),
+        validateLanguageCode('language'),
+        validateLength('name', 1, 200),
+        sanitizeHtml('name')
+    ),
+    AdminPagesController.createPageTranslation.bind(AdminPagesController)
+);
+
+router.put(
+    '/:id/translations/:lang',
+    validate(
+        validateId('id'),
+        validateLanguageCode('lang'),
+        validateLength('name', 1, 200),
+        sanitizeHtml('name')
+    ),
+    AdminPagesController.updatePageTranslation.bind(AdminPagesController)
+);
+
+router.delete(
+    '/:id/translations/:lang',
+    validate(
+        validateId('id'),
+        validateLanguageCode('lang')
+    ),
+    AdminPagesController.deletePageTranslation.bind(AdminPagesController)
+);
 
 export default router;
 

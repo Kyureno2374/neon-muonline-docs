@@ -35,5 +35,5 @@ NEON_MuOnline/
 
 Проект будет развернут на поддомене: **guides.neon-mu.net**
 
-**Текущий статус**: Миграция на MySQL завершена ✅
+**Текущий статус**: Этап 2 (Backend: Auth + CRUD + Validation + Logging) ✅
 

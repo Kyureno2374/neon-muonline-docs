@@ -15,6 +15,7 @@ const __dirname = dirname(__filename);
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { requestLogger } from './middleware/requestLogger.js';
+import { adminActionLogger } from './middleware/adminLoggerMiddleware.js';
 
 // Импорт роутов
 import pagesRouter from './routes/pages.js';
@@ -23,6 +24,8 @@ import authRouter from './routes/auth.js';
 import adminPagesRouter from './routes/admin/pages.js';
 import adminBlocksRouter from './routes/admin/blocks.js';
 import adminItemsRouter from './routes/admin/items.js';
+import adminLanguagesRouter from './routes/admin/languages.js';
+import adminUploadRouter from './routes/admin/upload.js';
 
 // Создание Express приложения
 const app = express();
@@ -65,9 +68,11 @@ app.get('/api/health', function healthCheck(req, res) {
 app.use('/api/pages', pagesRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/admin/auth', authRouter);
-app.use('/api/admin', adminPagesRouter);
-app.use('/api/admin', adminBlocksRouter);
-app.use('/api/admin', adminItemsRouter);
+app.use('/api/admin/pages', adminPagesRouter);
+app.use('/api/admin/blocks', adminBlocksRouter);
+app.use('/api/admin/items', adminItemsRouter);
+app.use('/api/admin/languages', adminLanguagesRouter);
+app.use('/api/admin/upload', adminUploadRouter);
 
 // =====================================
 // ERROR HANDLING

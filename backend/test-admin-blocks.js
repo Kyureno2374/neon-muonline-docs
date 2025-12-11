@@ -1,356 +1,248 @@
 /**
- * Тестирование CRUD API для блоков (админка)
+ * Тестирование CRUD API для Blocks (админка)
+ * Проверяет создание, чтение, обновление и удаление блоков
  */
 
-import dotenv from 'dotenv';
-dotenv.config();
+import { createTestRunner } from './test-utils.js';
 
-const API_URL = 'http://localhost:3000/api';
+const BASE_URL = 'http://localhost:3000/api';
 const ADMIN_EMAIL = 'admin@neon-muonline.com';
 const ADMIN_PASSWORD = 'admin123';
 
-let authToken = '';
+const runner = createTestRunner('CRUD API для Blocks');
+
+let accessToken = '';
 let createdBlockId = null;
-let testPageId = null; // ID существующей страницы для теста
 
-// Цвета для консоли
-const colors = {
-    reset: '\x1b[0m',
-    green: '\x1b[32m',
-    red: '\x1b[31m',
-    yellow: '\x1b[33m',
-    blue: '\x1b[34m',
-    cyan: '\x1b[36m',
-};
+async function runTests() {
+    runner.start();
 
-function log(message, color = 'reset') {
-    console.log(`${colors[color]}${message}${colors.reset}`);
-}
-
-// ==================== Утилиты ====================
-
-async function request(endpoint, options = {}) {
-    const url = `${API_URL}${endpoint}`;
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers,
-    };
-
-    if (authToken && !options.skipAuth) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-    }
-
-    const response = await fetch(url, {
-        ...options,
-        headers,
-    });
-
-    const data = await response.json();
-    return { response, data };
-}
-
-// ==================== Тесты ====================
-
-async function testLogin() {
-    log('\n🔐 === ТЕСТ 1: Авторизация ===', 'cyan');
-
-    const { response, data } = await request('/admin/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({
-            email: ADMIN_EMAIL,
-            password: ADMIN_PASSWORD,
-        }),
-        skipAuth: true,
-    });
-
-    if (response.ok && data.data?.tokens?.accessToken) {
-        authToken = data.data.tokens.accessToken;
-        log('✅ Авторизация успешна', 'green');
-        log(`Token: ${authToken.substring(0, 20)}...`, 'blue');
-        return true;
-    } else {
-        log(`❌ Авторизация не удалась: ${JSON.stringify(data.error || data.message)}`, 'red');
-        return false;
-    }
-}
-
-async function getTestPageId() {
-    log('\n📄 === Получение ID тестовой страницы ===', 'cyan');
-
-    const { response, data } = await request('/pages?lang=ru', {
-        skipAuth: true,
-    });
-
-    if (response.ok && data.data && data.data.length > 0) {
-        testPageId = data.data[0].id;
-        log(`✅ Используем страницу ID: ${testPageId} (${data.data[0].title})`, 'green');
-        return true;
-    } else {
-        log('❌ Не удалось получить страницу для теста', 'red');
-        return false;
-    }
-}
-
-async function testGetAllBlocks() {
-    log('\n📋 === ТЕСТ 2: Получение всех блоков ===', 'cyan');
-
-    const { response, data } = await request('/admin/blocks');
-
-    if (response.ok) {
-        log(`✅ Получено блоков: ${data.count}`, 'green');
-        console.log('Блоки:', JSON.stringify(data.data.slice(0, 2), null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testGetBlocksByPageId() {
-    log('\n📋 === ТЕСТ 3: Получение блоков конкретной страницы ===', 'cyan');
-
-    const { response, data } = await request(`/admin/blocks?page_id=${testPageId}`);
-
-    if (response.ok) {
-        log(`✅ Получено блоков для страницы ${testPageId}: ${data.count}`, 'green');
-        console.log('Блоки:', JSON.stringify(data.data.slice(0, 2), null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testCreateBlock() {
-    log('\n➕ === ТЕСТ 4: Создание нового блока ===', 'cyan');
-
-    const newBlock = {
-        page_id: testPageId,
-        block_type_id: 1, // text
-        image_url: null,
-        thumbnail_url: null,
-        sort_order: 999,
-    };
-
-    const { response, data } = await request('/admin/blocks', {
-        method: 'POST',
-        body: JSON.stringify(newBlock),
-    });
-
-    if (response.status === 201 && data.data) {
-        createdBlockId = data.data.id;
-        log(`✅ Блок создан с ID: ${createdBlockId}`, 'green');
-        console.log('Данные:', JSON.stringify(data.data, null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка создания: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testCreateBlockTranslation() {
-    log('\n🌐 === ТЕСТ 5: Создание перевода блока ===', 'cyan');
-
-    const translation = {
-        language: 'ru',
-        content: 'Тестовый контент блока на русском языке',
-    };
-
-    const { response, data } = await request(`/admin/blocks/${createdBlockId}/translations`, {
-        method: 'POST',
-        body: JSON.stringify(translation),
-    });
-
-    if (response.status === 201) {
-        log('✅ Перевод создан', 'green');
-        console.log('Данные:', JSON.stringify(data.data, null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testGetBlockTranslations() {
-    log('\n🌐 === ТЕСТ 6: Получение переводов блока ===', 'cyan');
-
-    const { response, data } = await request(`/admin/blocks/${createdBlockId}/translations`);
-
-    if (response.ok) {
-        log(`✅ Получено переводов: ${data.count}`, 'green');
-        console.log('Переводы:', JSON.stringify(data.data, null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testUpdateBlock() {
-    log('\n✏️ === ТЕСТ 7: Обновление блока ===', 'cyan');
-
-    const updates = {
-        block_type_id: 2, // picture
-        image_url: 'https://example.com/test-image.jpg',
-        sort_order: 100,
-    };
-
-    const { response, data } = await request(`/admin/blocks/${createdBlockId}`, {
-        method: 'PUT',
-        body: JSON.stringify(updates),
-    });
-
-    if (response.ok) {
-        log('✅ Блок обновлён', 'green');
-        console.log('Данные:', JSON.stringify(data.data, null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка обновления: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testUpdateBlockTranslation() {
-    log('\n🌐 === ТЕСТ 8: Обновление перевода блока ===', 'cyan');
-
-    const updatedContent = {
-        content: 'Обновлённый тестовый контент блока',
-    };
-
-    const { response, data } = await request(`/admin/blocks/${createdBlockId}/translations/ru`, {
-        method: 'PUT',
-        body: JSON.stringify(updatedContent),
-    });
-
-    if (response.ok) {
-        log('✅ Перевод обновлён', 'green');
-        console.log('Данные:', JSON.stringify(data.data, null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testUpdateBlockOrder() {
-    log('\n🔢 === ТЕСТ 9: Изменение порядка блока ===', 'cyan');
-
-    const { response, data } = await request(`/admin/blocks/${createdBlockId}/order`, {
-        method: 'PUT',
-        body: JSON.stringify({ sort_order: 50 }),
-    });
-
-    if (response.ok) {
-        log('✅ Порядок изменён', 'green');
-        console.log('Данные:', JSON.stringify(data.data, null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testGetBlockById() {
-    log('\n🔍 === ТЕСТ 10: Получение блока по ID ===', 'cyan');
-
-    const { response, data } = await request(`/admin/blocks/${createdBlockId}`);
-
-    if (response.ok) {
-        log('✅ Блок получен', 'green');
-        console.log('Данные:', JSON.stringify(data.data, null, 2));
-        return true;
-    } else {
-        log(`❌ Ошибка: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testDeleteBlockTranslation() {
-    log('\n🗑️ === ТЕСТ 11: Удаление перевода блока ===', 'cyan');
-
-    const { response, data } = await request(`/admin/blocks/${createdBlockId}/translations/ru`, {
-        method: 'DELETE',
-    });
-
-    if (response.ok) {
-        log('✅ Перевод удалён', 'green');
-        return true;
-    } else {
-        log(`❌ Ошибка: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-async function testDeleteBlock() {
-    log('\n🗑️ === ТЕСТ 12: Удаление блока ===', 'cyan');
-
-    const { response, data } = await request(`/admin/blocks/${createdBlockId}`, {
-        method: 'DELETE',
-    });
-
-    if (response.ok) {
-        log('✅ Блок удалён (мягкое удаление)', 'green');
-        return true;
-    } else {
-        log(`❌ Ошибка удаления: ${data.error}`, 'red');
-        return false;
-    }
-}
-
-// ==================== Запуск всех тестов ====================
-
-async function runAllTests() {
-    log('\n╔═══════════════════════════════════════════════════╗', 'blue');
-    log('║   ТЕСТИРОВАНИЕ CRUD API ДЛЯ БЛОКОВ (АДМИНКА)    ║', 'blue');
-    log('╚═══════════════════════════════════════════════════╝', 'blue');
-
-    const tests = [
-        testLogin,
-        getTestPageId,
-        testGetAllBlocks,
-        testGetBlocksByPageId,
-        testCreateBlock,
-        testCreateBlockTranslation,
-        testGetBlockTranslations,
-        testUpdateBlock,
-        testUpdateBlockTranslation,
-        testUpdateBlockOrder,
-        testGetBlockById,
-        testDeleteBlockTranslation,
-        testDeleteBlock,
-    ];
-
-    let passed = 0;
-    let failed = 0;
-
-    for (const test of tests) {
-        try {
-            const result = await test();
-            if (result) {
-                passed++;
-            } else {
-                failed++;
+    // Test 1: Авторизация
+    runner.test('Авторизация');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/auth/login`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD })
             }
-        } catch (error) {
-            log(`❌ Тест упал с ошибкой: ${error.message}`, 'red');
-            failed++;
-        }
+        );
+        runner.assert(success && data.success, 'Login failed');
+        accessToken = data.data.tokens.accessToken;
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+        process.exit(1);
     }
 
-    log('\n╔═══════════════════════════════════════════════════╗', 'blue');
-    log(`║   РЕЗУЛЬТАТЫ: ${passed} ✅  |  ${failed} ❌              ║`, 'blue');
-    log('╚═══════════════════════════════════════════════════╝', 'blue');
-
-    if (failed === 0) {
-        log('\n🎉 ВСЕ ТЕСТЫ ПРОШЛИ УСПЕШНО!', 'green');
-    } else {
-        log(`\n⚠️  ${failed} тестов не прошли`, 'yellow');
+    // Test 2: Получение всех блоков
+    runner.test('Получение всех блоков');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks`,
+            { headers: { 'Authorization': `Bearer ${accessToken}` } }
+        );
+        runner.assert(success && data.success, 'Get blocks failed');
+        runner.log(`Найдено блоков: ${data.data.length}`);
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
     }
+
+    // Test 3: Создание блока
+    runner.test('Создание нового блока');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    page_id: 1,
+                    block_type_id: 1,
+                    sort_order: 999
+                })
+            },
+            201
+        );
+        runner.assert(success && data.success, 'Create failed');
+        createdBlockId = data.data.id;
+        runner.log(`Создан блок ID: ${createdBlockId}`);
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 4: Получение блока по ID
+    runner.test('Получение блока по ID');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}`,
+            { headers: { 'Authorization': `Bearer ${accessToken}` } }
+        );
+        runner.assert(success && data.success, 'Get block failed');
+        runner.assert(data.data.id === createdBlockId, 'Wrong block ID');
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 5: Обновление блока
+    runner.test('Обновление блока');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({ sort_order: 1000 })
+            }
+        );
+        runner.assert(success && data.success, 'Update failed');
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 6: Создание перевода (RU)
+    runner.test('Создание перевода блока (RU)');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}/translations`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    language: 'ru',
+                    title: 'Тестовый блок',
+                    content: 'Содержимое'
+                })
+            },
+            201
+        );
+        runner.assert(success && data.success, 'Translation create failed');
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 7: Создание перевода (EN)
+    runner.test('Создание перевода блока (EN)');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}/translations`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    language: 'en',
+                    title: 'Test Block',
+                    content: 'Content'
+                })
+            },
+            201
+        );
+        runner.assert(success && data.success, 'Translation create failed');
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 8: Получение переводов блока
+    runner.test('Получение всех переводов блока');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}/translations`,
+            { headers: { 'Authorization': `Bearer ${accessToken}` } }
+        );
+        runner.assert(success && data.success, 'Get translations failed');
+        runner.log(`Найдено переводов: ${data.data.length}`);
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 9: Обновление перевода
+    runner.test('Обновление перевода блока');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}/translations/ru`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({ content: 'Обновлённое содержимое' })
+            }
+        );
+        runner.assert(success && data.success, 'Translation update failed');
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 10: Удаление перевода
+    runner.test('Удаление перевода блока');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}/translations/en`,
+            {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            }
+        );
+        runner.assert(success && data.success, 'Translation delete failed');
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 11: Удаление блока
+    runner.test('Удаление блока');
+    try {
+        const { success, data } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}`,
+            {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            }
+        );
+        runner.assert(success && data.success, 'Block delete failed');
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    // Test 12: Проверка что блок удалён
+    runner.test('Проверка что блок удалён');
+    try {
+        const { status } = await runner.request(
+            `${BASE_URL}/admin/blocks/${createdBlockId}`,
+            { headers: { 'Authorization': `Bearer ${accessToken}` } },
+            404
+        );
+        runner.assert(status === 404, 'Block still exists');
+        runner.pass();
+    } catch (error) {
+        runner.fail(error.message);
+    }
+
+    const allPassed = runner.end();
+    process.exit(allPassed ? 0 : 1);
 }
 
-runAllTests().catch((error) => {
-    log(`\n💥 Критическая ошибка: ${error.message}`, 'red');
-    console.error(error);
-    process.exit(1);
-});
-
+runTests();
