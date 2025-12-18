@@ -112,16 +112,16 @@
 
 #### 2.1 Аутентификация и авторизация ✅
 
-- [ ] Установка зависимостей: `bcrypt`, `jsonwebtoken`
-- [ ] Модель AdminsModel с методами:
+- [x] Установка зависимостей: `bcrypt`, `jsonwebtoken`
+- [x] Модель AdminsModel с методами:
   - `findByEmail()` - поиск админа по email
   - `verifyPassword()` - проверка пароля (bcrypt)
   - `createAdmin()` - создание нового админа
-- [ ] JWT токены:
+- [x] JWT токены:
   - Генерация access token (срок действия: 1 день)
   - Генерация refresh token (срок действия: 7 дней)
-- [ ] Middleware `authMiddleware.js` для защиты роутов
-- [ ] Эндпоинты:
+- [x] Middleware `authMiddleware.js` для защиты роутов
+- [x] Эндпоинты:
   - `POST /api/admin/auth/login` - вход (email + password)
   - `POST /api/admin/auth/refresh` - обновление токена
   - `POST /api/admin/auth/logout` - выход
@@ -129,13 +129,13 @@
 
 #### 2.2 CRUD API для Pages (страницы сайта) ✅
 
-- [ ] Контроллер `AdminPagesController.js`
-- [ ] Методы в `PagesModel`:
+- [x] Контроллер `AdminPagesController.js`
+- [x] Методы в `PagesModel`:
   - `createPage()` - создание страницы
   - `updatePage()` - обновление страницы
   - `deletePage()` - удаление страницы
   - `updatePageOrder()` - изменение порядка
-- [ ] Эндпоинты:
+- [x] Эндпоинты:
   - `POST /api/admin/pages` - создание страницы
   - `PUT /api/admin/pages/:id` - редактирование страницы
   - `DELETE /api/admin/pages/:id` - удаление страницы
@@ -144,17 +144,17 @@
   - `POST /api/admin/pages/:id/translations` - создание перевода
   - `PUT /api/admin/pages/:id/translations/:lang` - обновление перевода
   - `DELETE /api/admin/pages/:id/translations/:lang` - удаление перевода
-- [ ] Валидация: slug (уникальность), icon, sort_order
+- [x] Валидация: slug (уникальность), icon, sort_order
  
 #### 2.3 CRUD API для Blocks (блоки контента) ✅
 
-- [ ] Контроллер `AdminBlocksController.js`
-- [ ] Методы в `BlocksModel`:
+- [x] Контроллер `AdminBlocksController.js`
+- [x] Методы в `BlocksModel`:
   - `createBlock()` - создание блока
   - `updateBlock()` - обновление блока
   - `deleteBlock()` - удаление блока
   - `updateBlockOrder()` - изменение порядка блоков на странице
-- [ ] Эндпоинты:
+- [x] Эндпоинты:
   - `POST /api/admin/blocks` - создание блока
   - `PUT /api/admin/blocks/:id` - редактирование блока
   - `DELETE /api/admin/blocks/:id` - удаление блока
@@ -162,67 +162,67 @@
   - `GET /api/admin/blocks/:id/translations` - получение переводов
   - `POST /api/admin/blocks/:id/translations` - создание перевода
   - `PUT /api/admin/blocks/:id/translations/:lang` - обновление перевода
-- [ ] Валидация: block_type_id, page_id, sort_order
+- [x] Валидация: block_type_id, page_id, sort_order
 
 #### 2.4 CRUD API для Items (предметы) ✅
 
-- [ ] Контроллер `AdminItemsController.js`
-- [ ] Методы в `ItemsModel`:
+- [x] Контроллер `AdminItemsController.js`
+- [x] Методы в `ItemsModel`:
   - `createItem()` - создание предмета
   - `updateItem()` - обновление предмета
   - `deleteItem()` - удаление предмета
-- [ ] Эндпоинты:
+- [x] Эндпоинты:
   - `POST /api/admin/items` - создание предмета
   - `PUT /api/admin/items/:id` - редактирование предмета
   - `DELETE /api/admin/items/:id` - удаление предмета
   - `GET /api/admin/items/:id/translations` - получение переводов
   - `POST /api/admin/items/:id/translations` - создание перевода
   - `PUT /api/admin/items/:id/translations/:lang` - обновление перевода
-- [ ] Валидация: slug (уникальность), image_url
+- [x] Валидация: slug (уникальность), image_url
 
-#### 2.5 CRUD API для Languages (управление языками)
+#### 2.5 CRUD API для Languages (управление языками) ✅
 
-- [ ] Модель `LanguagesModel.js`
-- [ ] Методы:
+- [x] Модель `LanguagesModel.js`
+- [x] Методы:
   - `getAllLanguages()` - все языки
   - `getActiveLanguages()` - только активные
   - `createLanguage()` - добавление языка
   - `updateLanguage()` - обновление языка
   - `toggleLanguage()` - активация/деактивация
   - `deleteLanguage()` - удаление (с проверкой переводов)
-- [ ] Эндпоинты:
+- [x] Эндпоинты:
   - `GET /api/admin/languages` - список всех языков
   - `GET /api/admin/languages/active` - активные языки
   - `POST /api/admin/languages` - добавление языка
   - `PUT /api/admin/languages/:code` - редактирование языка
   - `PUT /api/admin/languages/:code/toggle` - вкл/выкл язык
   - `DELETE /api/admin/languages/:code` - удаление языка
-- [ ] Валидация: код языка (ISO 639-1)
+- [x] Валидация: код языка (ISO 639-1)
 
-#### 2.6 Загрузка изображений
+#### 2.6 Загрузка изображений ✅
 
-- [ ] Установка: `multer`, `sharp`
-- [ ] Middleware `uploadMiddleware.js`:
+- [x] Установка: `multer`, `sharp`
+- [x] Middleware `uploadMiddleware.js`:
   - Настройка хранилища (`/backend/uploads/`)
   - Валидация типов файлов (jpg, png, webp)
   - Ограничение размера (5MB)
-- [ ] Генерация миниатюр через `sharp`:
+- [x] Генерация миниатюр через `sharp`:
   - Для предметов: 200x200px (thumbnail)
   - Для блоков picture: 800x600px (thumbnail)
-- [ ] Эндпоинты:
+- [x] Эндпоинты:
   - `POST /api/admin/upload/image` - загрузка изображения
   - `DELETE /api/admin/upload/image` - удаление изображения
-- [ ] Автоматическое удаление старых файлов при обновлении
+- [x] Автоматическое удаление старых файлов при обновлении
 
-#### 2.7 Валидация и обработка ошибок
+#### 2.7 Валидация и обработка ошибок ✅
 
-- [ ] Middleware `validationMiddleware.js`
-- [ ] Валидация всех входящих данных:
+- [x] Middleware `validationMiddleware.js`
+- [x] Валидация всех входящих данных:
   - Обязательные поля
   - Форматы данных (email, slug, URL)
   - Уникальность (slug, email)
   - Длина строк
-- [ ] Централизованная обработка ошибок:
+- [x] Централизованная обработка ошибок:
   - 400 - Ошибка валидации
   - 401 - Не авторизован
   - 403 - Нет прав доступа
@@ -230,7 +230,7 @@
   - 409 - Конфликт (дубликат)
   - 500 - Ошибка сервера
 
-#### 2.8 Логирование действий
+#### 2.8 Логирование действий ✅
 
 - [x] Установка: `winston`, `winston-daily-rotate-file`
 - [x] Логирование в файлы:
@@ -243,7 +243,7 @@
 - [x] Интеграция в authMiddleware (автоматическое логирование)
 - [x] Тест логирования: `backend/test-logging.js`
 
-### Критерии приёмки этапа 2
+### Критерии приёмки этапа 2 ✅
 
 - ✅ JWT аутентификация работает (login, refresh, logout)
 - ✅ Все CRUD операции реализованы для Pages, Blocks, Items, Languages
@@ -259,6 +259,8 @@
 
 **Цель этапа:** Сверстать с нуля страницу логина и полноценную админ-панель по готовым дизайнам Figma.
 
+**Технологии:** Чистый HTML/CSS/JavaScript (без фреймворков)
+
 **Figma дизайны:**
 - [Login Page](https://www.figma.com/design/WtjSYeKHbGeKLlUv6mKeyd/Game-web-site?node-id=95-431)
 - [Admin Panel](https://www.figma.com/design/WtjSYeKHbGeKLlUv6mKeyd/Game-web-site?node-id=33-147)
@@ -269,36 +271,40 @@
 
 #### 3.1 Настройка Frontend проекта
 
-- [ ] Настройка Vite для админки
 - [ ] Создание структуры:
-  - `/frontend-admin/src/pages/` - страницы
-  - `/frontend-admin/src/components/` - компоненты
-  - `/frontend-admin/src/styles/` - глобальные стили
-  - `/frontend-admin/src/utils/` - утилиты (API client, auth helpers)
-  - `/frontend-admin/src/assets/` - изображения, иконки
-- [ ] Настройка роутинга (React Router / Vue Router)
-- [ ] Установка зависимостей:
-  - Axios (для API запросов)
-  - React/Vue (на выбор)
-  - CSS препроцессор (SCSS)
-  - Date picker, WYSIWYG editor и др.
+  - `/frontend/login.html` - страница логина
+  - `/frontend/admin/index.html` - главная админки
+  - `/frontend/admin/pages.html` - управление страницами
+  - `/frontend/admin/blocks.html` - управление блоками
+  - `/frontend/admin/items.html` - управление предметами
+  - `/frontend/admin/languages.html` - управление языками
+  - `/frontend/css/` - стили
+  - `/frontend/js/` - скрипты
+  - `/frontend/assets/` - изображения, иконки
+- [ ] Создание utils:
+  - `api.js` - работа с API
+  - `auth.js` - проверка токена, logout
+  - `router.js` - простой роутинг
+- [ ] Подключение шрифтов (Montserrat)
 
 #### 3.2 Страница логина (по Figma)
 
-- [ ] Верстка страницы логина:
+- [x] Верстка страницы логина:
   - Форма: Email + Password
-  - Кнопка "Войти"
+  - Кнопка "Войти" с gradient эффектом
   - Обработка ошибок (красные подсветки)
   - Loader при отправке
-- [ ] Интеграция с API:
+  - Фоновое изображение из Figma
+  - Иконка закрытия
+- [x] Интеграция с API:
   - POST `/api/admin/auth/login`
-  - Сохранение JWT токена в localStorage/cookies
+  - Сохранение JWT токенов в localStorage
   - Redirect на админку при успешном входе
-- [ ] Валидация на клиенте:
+- [x] Валидация на клиенте:
   - Email формат
   - Обязательные поля
   - Сообщения об ошибках
-- [ ] Адаптивность (mobile, tablet, desktop)
+- [x] Адаптивность (mobile, tablet, desktop)
 
 #### 3.3 Админ-панель - Главная страница (Dashboard)
 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - NEON MuOnline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="main-page">
+        <div class="hero-frame">
+            <div class="hero-left">
+                <h1 class="hero-title">
+                    Welcome to <br />
+                    NEON MuOnline!
+                </h1>
+                <p class="hero-description">
+                    You've probably played Mu Online on various servers before and experienced the game in different
+                    ways — but we guarantee, you've never played a server like this.
+                </p>
+            </div>
+
+            <div class="hero-right">
+                <div class="hero-cta-block">
+                    <span class="hero-cta-label">Start your adventure now:</span>
+                    <a href="#" class="hero-button">
+                        Read the rules
+                    </a>
+                </div>
+
+                <div class="hero-cta-block">
+                    <span class="hero-cta-label">Explore the server's features:</span>
+                    <a href="#" class="hero-button">
+                        Download game client
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/utils/api.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script>
+        // Проверяем авторизацию
+        if (!auth.requireAuth()) {
+            // Уже перенаправили на login
+        }
+
+        // Показываем имя админа
+        const adminData = auth.getAdminData();
+        if (adminData) {
+            // document.getElementById('adminName').textContent = adminData.name || adminData.email; // Закомментировано, так как элемента adminName пока нет
+        }
+
+        // Обработка logout
+        // document.getElementById('logoutBtn').addEventListener('click', async () => { // Закомментировано, так как элемента logoutBtn пока нет
+        //     await auth.logout();
+        //     window.location.href = '/login/index.html';
+        // });
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+/* Login Page Styles - По Figma дизайну */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    overflow: hidden;
+}
+
+/* Background */
+.login-page {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../assets/images/login-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+}
+
+.background-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(211, 235, 255, 0.1) 0%, rgba(91, 112, 207, 0.2) 100%), linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.4) 100%);
+}
+
+/* Login Container */
+.login-container {
+    position: relative;
+    z-index: 1;
+}
+
+.login-form {
+    position: relative;
+    background: linear-gradient(180deg, rgba(33, 37, 55, 1) 0%, rgba(24, 31, 61, 1) 100%);
+    padding: 48px;
+    border-radius: 2px;
+    box-shadow:
+        0px 0px 6.7px 0px rgba(0, 0, 0, 0.3),
+        inset 0px 0px 18.3px 0px rgba(1, 9, 28, 0.25);
+    width: 456px;
+    height: 340px;
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+.close-btn img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Form Title */
+.form-title {
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    color: #FFFFFF;
+    margin-bottom: 24px;
+}
+
+/* Form Content */
+.form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-label {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    color: #FFFFFF;
+}
+
+.form-input {
+    width: 100%;
+    height: 32px;
+    background: rgba(240, 240, 240, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    padding: 10px 24px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    color: #FFFFFF;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-input:focus {
+    background: rgba(240, 240, 240, 0.3);
+    border-color: rgba(255, 255, 255, 1);
+}
+
+.form-input.error {
+    border-color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+}
+
+/* Error Messages */
+.form-error {
+    font-size: 12px;
+    color: #ff6b6b;
+    display: none;
+    margin-top: 4px;
+}
+
+.form-error.visible {
+    display: block;
+}
+
+.form-error-message {
+    background: rgba(255, 68, 68, 0.15);
+    border: 1px solid rgba(255, 68, 68, 0.5);
+    border-radius: 2px;
+    padding: 12px;
+    color: #ff6b6b;
+    font-size: 14px;
+    display: none;
+}
+
+.form-error-message.visible {
+    display: block;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 133px;
+    height: 32px;
+    background: linear-gradient(180deg, rgba(27, 38, 82, 1) 0%, rgba(64, 80, 152, 1) 52%, rgba(32, 39, 70, 1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    box-shadow: inset 0px 0px 12.8px 0px rgba(7, 135, 200, 0.5);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1em;
+    letter-spacing: 0.02em;
+    text-align: center;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    align-self: flex-end;
+    padding: 8px 48px;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(180deg, rgba(32, 43, 92, 1) 0%, rgba(74, 90, 162, 1) 52%, rgba(37, 44, 80, 1) 100%);
+    box-shadow: inset 0px 0px 16px 0px rgba(7, 135, 200, 0.7);
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-text {
+    display: inline-block;
+}
+
+.btn-loader {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #FFFFFF;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+.submit-btn.loading .btn-text {
+    display: none;
+}
+
+.submit-btn.loading .btn-loader {
+    display: inline-block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-form {
+        padding: 32px 24px;
+        min-width: 320px;
+        width: calc(100vw - 40px);
+        height: auto;
+    }
+
+    .form-title {
+        font-size: 18px;
+    }
+
+    .form-label,
+    .form-input {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-form {
+        padding: 24px 20px;
+        min-width: 280px;
+        height: auto;
+    }
+
+    .submit-btn {
+        width: 100%;
+    }
+}
+

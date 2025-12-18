@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - NEON MuOnline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <div class="login-page">
+        <!-- Background Image -->
+        <div class="background-image"></div>
+
+        <!-- Login Form Container -->
+        <div class="login-container">
+            <div class="login-form">
+                <!-- Close Button -->
+                <button class="close-btn" aria-label="Close">
+                     <img src="../assets/images/close-icon.svg" alt="Close">
+                </button>
+
+                <!-- Form Header -->
+                <h1 class="form-title">Login</h1>
+
+                <!-- Form Fields -->
+                <form id="loginForm" class="form-content">
+                    <!-- Login Field -->
+                    <div class="form-group">
+                        <label for="email" class="form-label">Login</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="Login"
+                            required
+                            autocomplete="email"
+                        >
+                        <span class="form-error" id="emailError"></span>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-input" 
+                            placeholder="Password"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <span class="form-error" id="passwordError"></span>
+                    </div>
+
+                    <!-- General Error Message -->
+                    <div class="form-error-message" id="generalError"></div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="btn-text">Login</span>
+                        <span class="btn-loader" id="btnLoader"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/utils/api.js"></script>
+    <script src="../js/utils/auth.js"></script>
+    <script src="../js/login.js"></script>
+</body>
+</html>

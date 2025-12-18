@@ -51,6 +51,9 @@ app.use(requestLogger);
 // Статические файлы (загруженные изображения)
 app.use('/uploads', express.static(join(__dirname, '../uploads')));
 
+// Статические файлы (frontend)
+app.use(express.static(join(__dirname, '../../frontend')));
+
 // =====================================
 // ROUTES
 // =====================================
