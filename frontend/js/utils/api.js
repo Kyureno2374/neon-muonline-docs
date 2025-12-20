@@ -16,17 +16,33 @@ class ApiClient {
      */
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
-        
+
+        // Ensure headers include Content-Type; merge options.headers without overriding
         const config = {
+            ...options,
             headers: {
                 'Content-Type': 'application/json',
-                ...options.headers
-            },
-            ...options
+                ...(options.headers || {})
+            }
         };
 
+        // Append language query param if selected in localStorage (neon_lang)
         try {
-            const response = await fetch(url, config);
+            const currentLang = localStorage.getItem('neon_lang');
+            if (currentLang) {
+                const sep = url.includes('?') ? '&' : '?';
+                // do not mutate endpoint variable; build fetchUrl
+                var fetchUrl = `${url}${sep}lang=${encodeURIComponent(currentLang)}`;
+            } else {
+                var fetchUrl = url;
+            }
+        } catch (err) {
+            // localStorage may be unavailable in some environments
+            var fetchUrl = url;
+        }
+
+        try {
+            const response = await fetch(fetchUrl, config);
             const data = await response.json();
 
             if (!response.ok) {

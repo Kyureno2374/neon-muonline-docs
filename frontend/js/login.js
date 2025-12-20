@@ -84,6 +84,7 @@ function validateEmail(email) {
  */
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    debugger; // Added for debugging
 
     // Очистить все ошибки
     clearFieldErrors();
@@ -152,7 +153,7 @@ loginForm.addEventListener('submit', async (e) => {
             showGeneralError(error.message || 'An error occurred. Please try again.');
         }
 
-        console.error('❌ Login error:', error);
+        console.error('❌ Login error:', error.code, error.message, error.status, error.data);
     }
 });
 
