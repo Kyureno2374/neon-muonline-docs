@@ -24,6 +24,7 @@ import authRouter from './routes/auth.js';
 import adminPagesRouter from './routes/admin/pages.js';
 import adminBlocksRouter from './routes/admin/blocks.js';
 import adminItemsRouter from './routes/admin/items.js';
+import adminItemCategoriesRouter from './routes/admin/item-categories.js';
 import adminLanguagesRouter from './routes/admin/languages.js';
 import adminUploadRouter from './routes/admin/upload.js';
 
@@ -49,7 +50,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
 // Статические файлы (загруженные изображения)
-app.use('/uploads', express.static(join(__dirname, '../uploads')));
+// Путь к uploads в корне проекта (на два уровня вверх от backend/src)
+app.use('/uploads', express.static(join(__dirname, '../../uploads')));
 
 // Статические файлы (frontend)
 app.use(express.static(join(__dirname, '../../frontend')));
@@ -74,6 +76,7 @@ app.use('/api/admin/auth', authRouter);
 app.use('/api/admin/pages', adminPagesRouter);
 app.use('/api/admin/blocks', adminBlocksRouter);
 app.use('/api/admin/items', adminItemsRouter);
+app.use('/api/admin/item-categories', adminItemCategoriesRouter);
 app.use('/api/admin/languages', adminLanguagesRouter);
 app.use('/api/admin/upload', adminUploadRouter);
 

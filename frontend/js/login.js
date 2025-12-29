@@ -1,191 +1,100 @@
 /**
- * Логика страницы логина
+ * Скрипт для страницы логина
  */
 
-// Проверяем, если уже авторизован - редирект на админку
-if (auth.redirectIfAuthenticated()) {
-    // Уже перенаправили
-}
+import { adminLogin } from './api.js';
+import { requireNoAuth } from './auth.js';
+import { showError, showSuccess } from './notifications.js';
 
-// Элементы формы
+// Проверяем, не авторизован ли уже
+requireNoAuth();
+
+// Получаем элементы формы
 const loginForm = document.getElementById('loginForm');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const submitBtn = document.getElementById('submitBtn');
-const generalError = document.getElementById('generalError');
+const btnLoader = document.getElementById('btnLoader');
 const emailError = document.getElementById('emailError');
 const passwordError = document.getElementById('passwordError');
+const generalError = document.getElementById('generalError');
 const closeBtn = document.querySelector('.close-btn');
 
-/**
- * Показать ошибку для конкретного поля
- */
-function showFieldError(field, message) {
-    const input = field === 'email' ? emailInput : passwordInput;
-    const errorElement = field === 'email' ? emailError : passwordError;
+// Обработчик отправки формы
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    input.classList.add('error');
-    errorElement.textContent = message;
-    errorElement.classList.add('visible');
-}
+    // Очищаем ошибки
+    emailError.textContent = '';
+    passwordError.textContent = '';
+    generalError.textContent = '';
 
-/**
- * Очистить ошибки полей
- */
-function clearFieldErrors() {
-    emailInput.classList.remove('error');
-    passwordInput.classList.remove('error');
-    emailError.classList.remove('visible');
-    passwordError.classList.remove('visible');
-}
+    // Валидация на клиенте
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-/**
- * Показать общую ошибку
- */
-function showGeneralError(message) {
-    generalError.textContent = message;
-    generalError.classList.add('visible');
-}
-
-/**
- * Очистить общую ошибку
- */
-function clearGeneralError() {
-    generalError.classList.remove('visible');
-}
-
-/**
- * Показать loader на кнопке
- */
-function setLoading(isLoading) {
-    if (isLoading) {
-        submitBtn.classList.add('loading');
-        submitBtn.disabled = true;
-        emailInput.disabled = true;
-        passwordInput.disabled = true;
-    } else {
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-        emailInput.disabled = false;
-        passwordInput.disabled = false;
+    if (!email) {
+        emailError.textContent = 'Email обязателен';
+        return;
     }
-}
 
-/**
- * Валидация email
- */
-function validateEmail(email) {
+    if (!password) {
+        passwordError.textContent = 'Пароль обязателен';
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        emailError.textContent = 'Некорректный email';
+        return;
+    }
+
+    // Отправляем запрос
+    submitBtn.disabled = true;
+    btnLoader.style.display = 'inline-block';
+
+    try {
+        const response = await adminLogin(email, password);
+
+        showSuccess('Успешный вход!');
+
+        // Редирект на админку через 1 секунду
+        setTimeout(() => {
+            window.location.href = '/admin/main/index.html';
+        }, 1000);
+    } catch (error) {
+        console.error('Login error:', error);
+
+        if (error.status === 401) {
+            generalError.textContent = 'Неверный email или пароль';
+        } else if (error.status === 400) {
+            generalError.textContent = error.message || 'Ошибка валидации';
+        } else {
+            generalError.textContent = error.message || 'Ошибка при входе. Попробуйте позже.';
+        }
+
+        showError(generalError.textContent);
+    } finally {
+        submitBtn.disabled = false;
+        btnLoader.style.display = 'none';
+    }
+});
+
+// Обработчик кнопки закрытия
+closeBtn.addEventListener('click', () => {
+    window.location.href = '/for_users/index.html';
+});
+
+// Валидация email
+function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 
-/**
- * Обработка отправки формы
- */
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    debugger; // Added for debugging
-
-    // Очистить все ошибки
-    clearFieldErrors();
-    clearGeneralError();
-
-    // Получить данные формы
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-
-    // Валидация на клиенте
-    let hasErrors = false;
-
-    if (!email) {
-        showFieldError('email', 'Email is required');
-        hasErrors = true;
-    } else if (!validateEmail(email)) {
-        showFieldError('email', 'Invalid email format');
-        hasErrors = true;
-    }
-
-    if (!password) {
-        showFieldError('password', 'Password is required');
-        hasErrors = true;
-    }
-
-    if (hasErrors) {
-        return;
-    }
-
-    // Отправка на сервер
-    setLoading(true);
-
-    try {
-        const response = await api.post('/admin/auth/login', {
-            email: email,
-            password: password
-        });
-
-        if (response.success && response.data) {
-            // Сохраняем токены
-            auth.saveTokens(
-                response.data.tokens.accessToken,
-                response.data.tokens.refreshToken
-            );
-
-            // Сохраняем данные админа
-            auth.saveAdminData(response.data.admin);
-
-            // Показываем успех и перенаправляем
-            console.log('✅ Login successful:', response.data.admin.email);
-            
-            // Небольшая задержка для плавности
-            setTimeout(() => {
-                window.location.href = '/admin/index.html';
-            }, 300);
-        }
-    } catch (error) {
-        setLoading(false);
-
-        // Обработка ошибок
-        if (error.code === 'INVALID_CREDENTIALS') {
-            showGeneralError('Invalid email or password');
-        } else if (error.code === 'NETWORK_ERROR') {
-            showGeneralError('Cannot connect to server. Please try again later.');
-        } else {
-            showGeneralError(error.message || 'An error occurred. Please try again.');
-        }
-
-        console.error('❌ Login error:', error.code, error.message, error.status, error.data);
-    }
-});
-
-/**
- * Очистка ошибок при вводе
- */
+// Очистка ошибок при вводе
 emailInput.addEventListener('input', () => {
-    emailInput.classList.remove('error');
-    emailError.classList.remove('visible');
-    clearGeneralError();
+    emailError.textContent = '';
 });
 
 passwordInput.addEventListener('input', () => {
-    passwordInput.classList.remove('error');
-    passwordError.classList.remove('visible');
-    clearGeneralError();
+    passwordError.textContent = '';
 });
-
-/**
- * Обработка кнопки закрытия
- */
-closeBtn.addEventListener('click', () => {
-    // Перенаправляем на главную страницу сайта
-    window.location.href = '/';
-});
-
-/**
- * Enter для отправки формы
- */
-emailInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        passwordInput.focus();
-    }
-});
-

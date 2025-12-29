@@ -1,0 +1,13 @@
+:root {
+    --x-4: rgba(255, 255, 255, 0.8);
+    --blue: rgba(169, 183, 255, 1);
+    --pink: rgba(224, 169, 255, 1);
+    --text-font-family: "Montserrat", Helvetica;
+    --text-font-weight: 400;
+    --text-font-size: 16px;
+    --text-letter-spacing: -0.32px;
+    --text-line-height: normal;
+    --text-font-style: normal;
+    --2: 0px 0px 6.699999809265137px 0px rgba(0, 0, 0, 0.3);
+  }
+  

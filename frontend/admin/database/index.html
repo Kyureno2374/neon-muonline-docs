@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<script defer src="./injectScript.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="globals.css" />
+    <link rel="stylesheet" href="styleguide.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <script type="module" src="../../js/admin-database.js"></script>
+    <div class="data-base">
+      <img class="element" src="https://c.animaapp.com/mjkmnxnmeczW1N/img/7f2d6aef-bc7c-47cd-946c-c72cd46f1607-1.png" />
+      <div class="frame"></div>
+      <div class="div">
+        <img
+          class="element-bada-e-de"
+          src="https://c.animaapp.com/mjkmnxnmeczW1N/img/87bad0a4-e952-4de0-bfd1-51d7e6df5ccc-1.png"
+        />
+        <img class="img" src="https://c.animaapp.com/mjkmnxnmeczW1N/img/87bad0a4-e952-4de0-bfd1-51d7e6df5ccc-2.png" />
+      </div>
+      <div class="ellipse"></div>
+      <div class="frame-2">
+        <div class="ellipse-2"></div>
+        <div class="ellipse-3"></div>
+      </div>
+      <div class="frame-3">
+      </div>
+      <div class="frame-7">
+        <div class="frame-8">
+          <div class="welcome-to-NEON">Welcome to <br />NEON MuOnline!</div>
+          <p class="you-ve-probably">
+            You&#39;ve probably played Mu Online on various servers before and experienced the game in different ways —
+            but we guarantee, you&#39;ve never played a server like this.
+          </p>
+        </div>
+        <div class="frame-9">
+          <div class="frame-10">
+            <div class="text-wrapper-4">Start your adventure now:</div>
+            <div class="button-wrapper"><div class="text-wrapper-3">Read the rules</div></div>
+          </div>
+          <div class="frame-10">
+            <div class="text-wrapper-4">Explore the server&#39;s features:</div>
+            <div class="button-wrapper"><div class="button">Download game client</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-11">
+        <img class="gravity-ui-databases" src="https://c.animaapp.com/mjkmnxnmeczW1N/img/gravity-ui-databases.svg" />
+        <div class="text-wrapper-3">Item's database</div>
+        <div class="language-switcher" id="languageSwitcher" style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
+          <select id="languageSelect" style="padding: 8px 12px; border-radius: 4px; border: 1px solid #E3E3E3; background: white; cursor: pointer; font-size: 14px;">
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="en">🇬🇧 English</option>
+          </select>
+        </div>
+      </div>
+      <div class="frame-12">
+        <div class="frame-13">
+          <img class="material-symbols" src="https://c.animaapp.com/mjkmnxnmeczW1N/img/material-symbols-search.svg" />
+          <input type="text" id="searchInput" class="text-wrapper" placeholder="Search" style="border: none; background: transparent; outline: none; flex: 1; font-size: 14px;" />
+        </div>
+        <select id="categoryFilter" style="padding: 8px 12px; border-radius: 4px; border: 1px solid #E3E3E3; background: white; cursor: pointer; font-size: 14px;">
+          <option value="">Все категории</option>
+        </select>
+        <div class="frame-6 add-item-btn" style="cursor: pointer;">
+          <img class="ic-baseline-plus" src="https://c.animaapp.com/mjkmnxnmeczW1N/img/ic-baseline-plus.svg" />
+          <div class="text-wrapper-3">Add item</div>
+        </div>
+        <div class="frame-14">
+          <div class="frame-15">
+            <div class="frame-16">
+              <div class="frame-17"><div class="text-wrapper-5">Name <span id="sortNameBtn" style="cursor: pointer; font-size: 12px; margin-left: 5px;">↕</span></div></div>
+              <div class="frame-18"><div class="text-wrapper-5">Description</div></div>
+              <div class="frame-19"><div class="text-wrapper-6">Photo</div></div>
+              <div class="frame-20"><div class="text-wrapper-6">Actions</div></div>
+            </div>
+          </div>
+          <div class="pagination">
+            <div class="page"><img class="carat" src="https://c.animaapp.com/mjkmnxnmeczW1N/img/carat-2.svg" /></div>
+            <div class="page-active-wrapper">
+              <div class="page-active"><div class="num">1</div></div>
+            </div>
+            <div class="page-2"><div class="num-2">2</div></div>
+            <div class="page-2"><div class="num-2">...</div></div>
+            <div class="page-2"><div class="num-2">9</div></div>
+            <div class="page-2"><div class="num-2">10</div></div>
+            <div class="page-2"><img class="carat" src="https://c.animaapp.com/mjkmnxnmeczW1N/img/carat.svg" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="add-item-modal" id="addItemModal" style="display: none;">
+      <div class="add-item-modal-overlay"></div>
+      <div class="add-item-modal-content">
+        <button class="add-item-modal-close" aria-label="Close modal">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjQnIGhlaWdodD0nMjQnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nbm9uZScgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz4KPHBhdGggZD0nTTYuNCAxOUw1IDE3LjZMMTAuNiAxMkw1IDYuNEw2LjQgNUwxMiAxMC42TDE3LjYgNUwxOSA2LjRMMTMuNCAxMkwxOSAxNy42TDE3LjYgMTlMMTIgMTMuNEw2LjQgMTlaJyBmaWxsPScjRTNFM0UzJy8+Cjwvc3ZnPgo=" alt="Close" />
+        </button>
+        <div class="add-item-modal-body">
+          <form class="add-item-form" id="addItemForm">
+            <div class="add-item-form-header">
+              <h2 class="add-item-title">Adding an item</h2>
+            </div>
+            
+            <div class="add-item-field">
+              <label class="add-item-label">Name of the item</label>
+              <input type="text" class="add-item-input" placeholder="List" required />
+            </div>
+            
+            <div class="add-item-field">
+              <label class="add-item-label">Description of the item</label>
+              <textarea class="add-item-textarea" placeholder="List" rows="4" required></textarea>
+            </div>
+            
+            <div class="add-item-field">
+              <label class="add-item-label">Photo of the item</label>
+              <div class="add-item-upload">
+                <div class="add-item-upload-content">
+                  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMzYnIGhlaWdodD0nMzYnIHZpZXdCb3g9JzAgMCAzNiAzNicgZmlsbD0nbm9uZScgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz4KPHBhdGggZD0nTTcuNSAzMS41QzYuNjc1IDMxLjUgNS45Njg3NSAzMS4yMDYzIDUuMzgxMjUgMzAuNjE4OEM0Ljc5Mzc1IDMwLjAzMTMgNC41IDI5LjMyNSA0LjUgMjguNVY3LjVDNC41IDYuNjc1IDQuNzkzNzUgNS45Njg3NSA1LjM4MTI1IDUuMzgxMjVDNS45Njg3NSA0Ljc5Mzc1IDYuNjc1IDQuNSA3LjUgNC41SDE5LjVWNy41SDcuNVYyOC41SDI4LjVWMTYuNUgzMS41VjI4LjVDMzEuNSAyOS4zMjUgMzEuMjA2MyAzMC4wMzEzIDMwLjYxODggMzAuNjE4OEMzMC4wMzEzIDMxLjIwNjMgMjkuMzI1IDMxLjUgMjguNSAzMS41SDcuNVpNOSAyNS41SDI3TDIxLjM3NSAxOEwxNi44NzUgMjRMMTMuNSAxOS41TDkgMjUuNVpNMjUuNSAxMy41VjEwLjVIMjIuNVY3LjVIMjUuNVY0LjVIMjguNVY3LjVIMzEuNVYxMC41SDI4LjVWMTMuNUgyNS41WicgZmlsbD0nI0UzRTNFMycvPgo8L3N2Zz4K" alt="Upload" class="add-item-upload-icon" />
+                  <div class="add-item-upload-text">
+                    <div class="add-item-upload-title">Click to upload</div>
+                    <div class="add-item-upload-subtitle">or drag and drop file here</div>
+                  </div>
+                </div>
+                <input type="file" class="add-item-file-input" accept="image/*" />
+              </div>
+            </div>
+            
+            <button type="submit" class="add-item-save-btn">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

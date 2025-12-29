@@ -2,7 +2,6 @@
 CREATE TABLE IF NOT EXISTS pages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     slug VARCHAR(255) UNIQUE NOT NULL COMMENT 'URL-friendly идентификатор страницы',
-    icon VARCHAR(100) COMMENT 'Иконка страницы (опционально)',
     sort_order INT DEFAULT 0 COMMENT 'Порядок отображения в боковой панели',
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

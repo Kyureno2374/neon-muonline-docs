@@ -21,6 +21,12 @@ const router = express.Router();
 // Все роуты требуют авторизации
 router.use(authMiddleware);
 
+// Получение всех страниц
+router.get(
+    '/',
+    AdminPagesController.getPages.bind(AdminPagesController)
+);
+
 // CRUD операции со страницами
 router.post(
     '/',
@@ -75,9 +81,8 @@ router.put(
     '/:id/translations/:lang',
     validate(
         validateId('id'),
-        validateLanguageCode('lang'),
-        validateLength('name', 1, 200),
-        sanitizeHtml('name')
+        validateLanguageCode('lang')
+        // Убираем жесткую валидацию name, так как контроллер поддерживает оба поля
     ),
     AdminPagesController.updatePageTranslation.bind(AdminPagesController)
 );
@@ -92,4 +97,3 @@ router.delete(
 );
 
 export default router;
-

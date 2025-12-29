@@ -1,19 +1,18 @@
 -- Добавление страниц сайта (согласно Figma дизайну)
-INSERT INTO pages (slug, icon, sort_order, is_active) VALUES
-('main', '🏠', 0, TRUE),
-('general-information', '📋', 1, TRUE),
-('characters', '⚔️', 2, TRUE),
-('game-interface', '🎮', 3, TRUE),
-('unique-features', '✨', 4, TRUE),
-('crafting', '🔨', 5, TRUE),
-('equipment', '🛡️', 6, TRUE),
-('monster-info', '👹', 7, TRUE),
-('events', '🎉', 8, TRUE),
-('quests', '📜', 9, TRUE),
-('donate-features', '💎', 10, TRUE),
-('help-server-grow', '❤️', 11, TRUE)
+INSERT INTO pages (slug, sort_order, is_active) VALUES
+('main', 0, TRUE),
+('general-information', 1, TRUE),
+('characters', 2, TRUE),
+('game-interface', 3, TRUE),
+('unique-features', 4, TRUE),
+('crafting', 5, TRUE),
+('equipment', 6, TRUE),
+('monster-info', 7, TRUE),
+('events', 8, TRUE),
+('quests', 9, TRUE),
+('donate-features', 10, TRUE),
+('help-server-grow', 11, TRUE)
 ON DUPLICATE KEY UPDATE 
-    icon = VALUES(icon),
     sort_order = VALUES(sort_order),
     is_active = VALUES(is_active);
 

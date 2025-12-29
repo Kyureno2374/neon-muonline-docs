@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>NEON MuOnline - Edit Page</title>
+    <link rel="stylesheet" href="globals.css" />
+    <link rel="stylesheet" href="styleguide.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <script type="module" src="../../js/admin-editing.js"></script>
+    <div class="editing-page">
+      <!-- Background Elements -->
+      <img class="element" src="https://c.animaapp.com/mjkrezacKyXbCJ/img/7f2d6aef-bc7c-47cd-946c-c72cd46f1607-1.png" />
+      <div class="frame"></div>
+      <div class="div">
+        <img
+          class="element-bada-e-de"
+          src="https://c.animaapp.com/mjkrezacKyXbCJ/img/87bad0a4-e952-4de0-bfd1-51d7e6df5ccc-1.png"
+        />
+        <img class="img" src="https://c.animaapp.com/mjkrezacKyXbCJ/img/87bad0a4-e952-4de0-bfd1-51d7e6df5ccc-2.png" />
+      </div>
+      <div class="ellipse"></div>
+
+      <!-- Header -->
+      <div class="frame-2">
+        <div class="frame-3">
+          <div class="welcome-to-NEON">Welcome to <br />NEON MuOnline!</div>
+          <p class="you-ve-probably">
+            You&#39;ve probably played Mu Online on various servers before and experienced the game in different ways —
+            but we guarantee, you&#39;ve never played a server like this.
+          </p>
+        </div>
+        <div class="frame-4">
+          <div class="frame-5">
+            <div class="text-wrapper">Start your adventure now:</div>
+            <div class="button-wrapper"><div class="text-wrapper-2">Read the rules</div></div>
+          </div>
+          <div class="frame-5">
+            <div class="text-wrapper">Explore the server&#39;s features:</div>
+            <!-- Language Switcher -->
+            <div class="language-switcher-wrapper">
+              <button class="language-switcher-btn" id="languageSwitcherBtn" aria-label="Select language">
+                <span class="language-switcher-current" id="currentLanguage">RU</span>
+                <svg class="language-switcher-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="language-switcher-dropdown" id="languageSwitcherDropdown">
+                <button class="language-switcher-option" data-lang="ru">
+                  <span class="language-flag">🇷🇺</span>
+                  <span class="language-name">Русский</span>
+                </button>
+                <button class="language-switcher-option" data-lang="en">
+                  <span class="language-flag">🇬🇧</span>
+                  <span class="language-name">English</span>
+                </button>
+              </div>
+            </div>
+            <div class="button-wrapper"><div class="button">Download game client</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search and Save -->
+      <div class="frame-6">
+        <img class="material-symbols" src="https://c.animaapp.com/mjkrezacKyXbCJ/img/material-symbols-search.svg" />
+        <input type="search" class="text-wrapper-3" placeholder="Search" id="searchInput" />
+      </div>
+      <button class="div-wrapper" id="saveBtn">
+        <div class="text-wrapper-2">Save</div>
+      </button>
+
+      <!-- Main Content Area -->
+      <div class="frame-7" id="contentArea">
+        <!-- Blocks will be loaded here -->
+      </div>
+
+      <!-- Left Sidebar Background -->
+      <div class="frame-28">
+        <div class="ellipse-2"></div>
+        <div class="ellipse-3"></div>
+      </div>
+
+      <!-- Left Sidebar Navigation -->
+      <div class="frame-29">
+        <div class="frame-30" id="pagesList">
+          <!-- Pages will be loaded here -->
+        </div>
+        <div class="frame-36" id="itemsDatabaseBtn">
+          <img class="gravity-ui-databases" src="https://c.animaapp.com/mjkrezacKyXbCJ/img/gravity-ui-databases.svg" />
+          <div class="text-wrapper-2">Item's database</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block Modal -->
+    <div class="add-object-modal" id="blockModal" style="display: none;">
+      <div class="add-object-modal-overlay"></div>
+      <div class="add-object-modal-content">
+        <button class="add-object-modal-close" id="closeBlockModal">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjQnIGhlaWdodD0nMjQnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nbm9uZScgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz4KPHBhdGggZD0nTTYuNCAxOUw1IDE3LjZMMTAuNiAxMkw1IDYuNEw2LjQgNUwxMiAxMC42TDE3LjYgNUwxOSA2LjRMMTMuNCAxMkwxOSAxNy42TDE3LjYgMTlMMTIgMTMuNEw2LjQgMTlaJyBmaWxsPScjRTNFM0UzJy8+Cjwvc3ZnPgo=" />
+        </button>
+        <div class="add-object-modal-body">
+          <form class="add-object-form" id="blockForm">
+            <div class="add-object-form-header">
+              <h2 class="add-object-title" id="blockModalTitle">Add Block</h2>
+              <div class="add-object-select-wrapper">
+                <select class="add-object-select" id="blockType" name="blockType" required>
+                  <option value="">Type of block</option>
+                  <option value="1">Text</option>
+                  <option value="2">Picture</option>
+                  <option value="3">List</option>
+                </select>
+              </div>
+              <textarea id="blockContent" placeholder="Block content" rows="10" style="width: 100%; padding: 10px; margin-top: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 2px; color: white; font-family: 'Montserrat', Helvetica; font-size: 14px; resize: vertical;"></textarea>
+            </div>
+            <button type="submit" class="add-object-save-btn">
+              <span>Save</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Modal -->
+    <div class="add-object-modal" id="pageModal" style="display: none;">
+      <div class="add-object-modal-overlay"></div>
+      <div class="add-object-modal-content">
+        <button class="add-object-modal-close" id="closePageModal">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjQnIGhlaWdodD0nMjQnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nbm9uZScgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz4KPHBhdGggZD0nTTYuNCAxOUw1IDE3LjZMMTAuNiAxMkw1IDYuNEw2LjQgNUwxMiAxMC42TDE3LjYgNUwxOSA2LjRMMTMuNCAxMkwxOSAxNy42TDE3LjYgMTlMMTIgMTMuNEw2LjQgMTlaJyBmaWxsPScjRTNFM0UzJy8+Cjwvc3ZnPgo=" />
+        </button>
+        <div class="add-object-modal-body">
+          <form class="add-object-form" id="pageForm">
+            <div class="add-object-form-header">
+              <h2 class="add-object-title">Create New Page</h2>
+              <input type="text" id="pageTitle" placeholder="Page title" required style="width: 100%; padding: 10px; margin-top: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 2px; color: white; font-family: 'Montserrat', Helvetica; font-size: 14px;" />
+              <input type="text" id="pageSlug" placeholder="Page slug (e.g., general-info)" style="width: 100%; padding: 10px; margin-top: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 2px; color: white; font-family: 'Montserrat', Helvetica; font-size: 14px;" />
+            </div>
+            <button type="submit" class="add-object-save-btn">
+              <span>Create</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

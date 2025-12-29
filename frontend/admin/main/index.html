@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>NEON MuOnline - Game Information</title>
+    <link rel="stylesheet" href="globals.css" />
+    <link rel="stylesheet" href="styleguide.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <script type="module" src="../../js/admin-pages.js"></script>
+    <main class="main-page" data-model-id="33:147">
+      <img
+        class="element"
+        src="https://c.animaapp.com/AWtvtqqH/img/7f2d6aef-bc7c-47cd-946c-c72cd46f1607-1.png"
+        alt="Background header image"
+      />
+      <div class="frame" aria-hidden="true"></div>
+      <div class="div">
+        <img
+          class="element-bada-e-de"
+          src="https://c.animaapp.com/AWtvtqqH/img/87bad0a4-e952-4de0-bfd1-51d7e6df5ccc-1.png"
+          alt="Character illustration left"
+        />
+        <img
+          class="img"
+          src="https://c.animaapp.com/AWtvtqqH/img/87bad0a4-e952-4de0-bfd1-51d7e6df5ccc-2.png"
+          alt="Character illustration right"
+        />
+      </div>
+      <div class="ellipse" aria-hidden="true"></div>
+      
+      <!-- EDIT BUTTON FOR ADMIN -->
+      <button class="frame-2" aria-label="Edit" id="editPageBtn" style="position: absolute; top: 342px; left: 1169px; z-index: 100; display: none;">
+        <img
+          class="material-symbols"
+          src="https://c.animaapp.com/AWtvtqqH/img/material-symbols-edit-outline-2.svg"
+          alt=""
+          aria-hidden="true"
+        />
+        <span class="text-wrapper">Edit</span>
+      </button>
+
+      <header class="frame-3">
+        <div class="frame-4">
+          <h1 class="welcome-to-NEON">Welcome to <br />NEON MuOnline!</h1>
+          <p class="you-ve-probably">
+            You've probably played Mu Online on various servers before and experienced the game in different ways — but
+            we guarantee, you've never played a server like this.
+          </p>
+        </div>
+        <nav class="frame-5" aria-label="Quick actions">
+          <div class="frame-6">
+            <p class="text-wrapper-2">Start your adventure now:</p>
+            <a href="rules.html" class="button-wrapper">
+              <span class="button">Read the rules</span>
+            </a>
+          </div>
+          <div class="frame-6">
+            <p class="text-wrapper-2">Explore the server's features:</p>
+            <!-- Language Switcher -->
+            <div class="language-switcher-wrapper">
+              <button class="language-switcher-btn" id="languageSwitcherBtn" aria-label="Select language">
+                <span class="language-switcher-current" id="currentLanguage">RU</span>
+                <svg class="language-switcher-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="language-switcher-dropdown" id="languageSwitcherDropdown">
+                <button class="language-switcher-option" data-lang="ru">
+                  <span class="language-flag">🇷🇺</span>
+                  <span class="language-name">Русский</span>
+                </button>
+                <button class="language-switcher-option" data-lang="en">
+                  <span class="language-flag">🇬🇧</span>
+                  <span class="language-name">English</span>
+                </button>
+              </div>
+            </div>
+            <a href="download.html" class="button-wrapper">
+              <span class="button-2">Download game client</span>
+            </a>
+          </div>
+        </nav>
+      </header>
+      <div class="frame-7" role="search">
+        <img
+          class="material-symbols-2"
+          src="https://c.animaapp.com/AWtvtqqH/img/material-symbols-search-2.svg"
+          alt=""
+          aria-hidden="true"
+        />
+        <label for="search-input" class="visually-hidden">Search</label>
+        <input
+          type="search"
+          id="search-input"
+          class="text-wrapper-3"
+          placeholder="Search"
+          aria-label="Search the site"
+        />
+      </div>
+      <section class="frame-8" aria-labelledby="general-info-heading">
+        <header class="frame-9">
+          <img
+            class="af-fa-c"
+            src="https://c.animaapp.com/AWtvtqqH/img/a1f36730-fa95-49c3-910f-2d84c88b3282-1@2x.png"
+            alt="General information icon"
+          />
+          <h2 class="text-wrapper-4" id="general-info-heading">General information</h2>
+        </header>
+        <ul class="frame-10">
+          <!-- Контент будет загружен скриптом -->
+        </ul>
+      </section>
+      <aside class="frame-12" aria-label="Navigation menu">
+        <div class="ellipse-2" aria-hidden="true"></div>
+        <div class="ellipse-3" aria-hidden="true"></div>
+        <nav class="frame-13" aria-label="Main navigation">
+          <!-- Страницы будут загружены скриптом -->
+        </nav>
+      </aside>
+      
+      <!-- Add Object Modal -->
+      <div class="add-object-modal" id="addObjectModal" style="display: none;">
+        <div class="add-object-modal-overlay"></div>
+        <div class="add-object-modal-content">
+          <button class="add-object-modal-close" id="closeModal" aria-label="Close modal">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjQnIGhlaWdodD0nMjQnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nbm9uZScgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz4KPHBhdGggZD0nTTYuNCAxOUw1IDE3LjZMMTAuNiAxMkw1IDYuNEw2LjQgNUwxMiAxMC42TDE3LjYgNUwxOSA2LjRMMTMuNCAxMkwxOSAxNy42TDE3LjYgMTlMMTIgMTMuNEw2LjQgMTlaJyBmaWxsPScjRTNFM0UzJy8+Cjwvc3ZnPgo=" alt="Close" />
+          </button>
+          <div class="add-object-modal-body">
+            <form class="add-object-form">
+              <div class="add-object-form-header">
+                <h2 class="add-object-title">Select which object to add</h2>
+                <div class="add-object-select-wrapper">
+                  <select class="add-object-select" id="objectType" name="objectType" required>
+                    <option value="">Type of object</option>
+                    <option value="text">Text</option>
+                    <option value="image">Image</option>
+                    <option value="video">Video</option>
+                    <option value="link">Link</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="add-object-save-btn">
+                <span>Save</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

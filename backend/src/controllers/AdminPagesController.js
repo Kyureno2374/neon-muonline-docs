@@ -7,6 +7,24 @@ import PagesModel from '../models/PagesModel.js';
 
 class AdminPagesController {
     /**
+     * GET /api/admin/pages
+     * Получить все страницы
+     */
+    async getPages(req, res, next) {
+        try {
+            const { lang } = req.query;
+            const pages = await PagesModel.getAllPages(lang);
+            res.json({
+                success: true,
+                data: pages,
+                count: pages.length
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
      * POST /api/admin/pages
      * Создать новую страницу
      */
@@ -184,14 +202,16 @@ class AdminPagesController {
     async createPageTranslation(req, res, next) {
         try {
             const { id } = req.params;
-            const { language, name } = req.body;
+            // Поддерживаем оба поля: name и title для обратной совместимости
+            const { language, name, title } = req.body;
+            const pageName = name || title;
 
             // Валидация обязательных полей
-            if (!language || !name) {
+            if (!language || !pageName) {
                 return res.status(400).json({
                     success: false,
                     error: {
-                        message: 'Missing required fields: language, name',
+                        message: 'Missing required fields: language, name (or title)',
                         code: 'VALIDATION_ERROR'
                     }
                 });
@@ -213,7 +233,7 @@ class AdminPagesController {
             const translation = await PagesModel.createPageTranslation(
                 parseInt(id),
                 language,
-                name
+                pageName
             );
 
             res.status(201).json({
@@ -243,14 +263,28 @@ class AdminPagesController {
     async updatePageTranslation(req, res, next) {
         try {
             const { id, lang } = req.params;
-            const { name } = req.body;
+            // Поддерживаем оба поля: name и title для обратной совместимости
+            const { name, title } = req.body;
+            let pageName = name || title;
 
             // Валидация обязательных полей
-            if (!name) {
+            if (!pageName) {
                 return res.status(400).json({
                     success: false,
                     error: {
-                        message: 'Missing required field: name',
+                        message: 'Missing required field: name or title',
+                        code: 'VALIDATION_ERROR'
+                    }
+                });
+            }
+
+            // Валидация длины
+            pageName = pageName.trim();
+            if (pageName.length < 1 || pageName.length > 200) {
+                return res.status(400).json({
+                    success: false,
+                    error: {
+                        message: 'Page name must be between 1 and 200 characters',
                         code: 'VALIDATION_ERROR'
                     }
                 });
@@ -272,7 +306,7 @@ class AdminPagesController {
             const translation = await PagesModel.updatePageTranslation(
                 parseInt(id),
                 lang,
-                name
+                pageName
             );
 
             if (!translation) {
@@ -339,4 +373,3 @@ class AdminPagesController {
 }
 
 export default new AdminPagesController();
-

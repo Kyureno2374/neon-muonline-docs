@@ -7,12 +7,20 @@ import BlocksModel from '../models/BlocksModel.js';
 class AdminBlocksController {
     /**
      * Получить все блоки (для админки)
-     * GET /api/admin/blocks?page_id=X
+     * GET /api/admin/blocks?page_id=X&lang=ru
      */
     async getAllBlocks(req, res) {
         try {
-            const { page_id } = req.query;
-            const blocks = await BlocksModel.getAllBlocksForAdmin(page_id || null);
+            const { page_id, lang = 'ru' } = req.query;
+            
+            if (!page_id) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'page_id is required'
+                });
+            }
+
+            const blocks = await BlocksModel.getBlocksByPageId(page_id, lang);
 
             res.json({
                 success: true,
@@ -283,10 +291,11 @@ class AdminBlocksController {
             const { id, lang } = req.params;
             const { content } = req.body;
 
-            if (!content) {
+            // Проверяем наличие поля content (может быть пустой строкой)
+            if (content === undefined || content === null) {
                 return res.status(400).json({
                     success: false,
-                    error: 'content is required'
+                    error: 'content field is required (can be empty string)'
                 });
             }
 

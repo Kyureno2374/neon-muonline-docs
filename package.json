@@ -11,7 +11,9 @@
     "db:migrate": "node database/run-migrations.js",
     "db:seed": "node database/run-seeds.js",
     "db:setup": "npm run db:migrate && npm run db:seed",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node backend/test-production-ready.js",
+    "test:public": "node backend/test-public-api.js",
+    "test:all": "npm run test:public && npm run test"
   },
   "keywords": [
     "muonline",
@@ -34,6 +36,7 @@
     "multer": "^2.0.2",
     "mysql2": "^3.15.3",
     "sharp": "^0.34.5",
+    "sqlite3": "^5.1.7",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0"
   }

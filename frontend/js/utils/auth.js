@@ -57,18 +57,7 @@ class AuthManager {
      * Выйти из системы
      */
     async logout() {
-        const token = this.getAccessToken();
-        
-        // Попытаться уведомить сервер о logout
-        if (token) {
-            try {
-                await api.post('/admin/auth/logout', {}, token);
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        }
-
-        // Очистить локальное хранилище
+        // Backend connection removed - just clear local storage
         this.clearAuth();
     }
 
@@ -85,28 +74,9 @@ class AuthManager {
      * Обновить access token через refresh token
      */
     async refreshAccessToken() {
-        const refreshToken = this.getRefreshToken();
-        
-        if (!refreshToken) {
-            throw new Error('No refresh token available');
-        }
-
-        try {
-            const response = await api.post('/admin/auth/refresh', {
-                refreshToken: refreshToken
-            });
-
-            if (response.success && response.data.accessToken) {
-                localStorage.setItem(this.ACCESS_TOKEN_KEY, response.data.accessToken);
-                return response.data.accessToken;
-            }
-
-            throw new Error('Failed to refresh token');
-        } catch (error) {
-            // Если refresh не удался - разлогиниваем
-            this.clearAuth();
-            throw error;
-        }
+        // Backend connection removed - functionality disabled
+        this.clearAuth();
+        throw new Error('Backend connection removed');
     }
 
     /**

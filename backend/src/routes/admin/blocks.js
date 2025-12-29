@@ -90,9 +90,9 @@ router.put(
     '/:id/translations/:lang',
     validate(
         validateId('id'),
-        validateLanguageCode('lang'),
-        validateLength('content', 1, 10000),
-        sanitizeHtml('content')
+        validateLanguageCode('lang')
+        // Убираем requireFields(['content']), так как контроллер сам проверяет наличие поля
+        // Разрешаем пустой контент для удаления изображений
     ),
     AdminBlocksController.updateBlockTranslation.bind(AdminBlocksController)
 );

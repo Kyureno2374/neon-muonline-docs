@@ -16,7 +16,6 @@ class PagesModel {
             SELECT 
                 p.id,
                 p.slug,
-                p.icon,
                 p.sort_order as display_order,
                 pt.name as title,
                 pt.language as lang
@@ -41,7 +40,6 @@ class PagesModel {
             SELECT 
                 p.id,
                 p.slug,
-                p.icon,
                 p.sort_order as display_order,
                 p.created_at,
                 p.updated_at,
@@ -67,7 +65,6 @@ class PagesModel {
             SELECT 
                 p.id,
                 p.slug,
-                p.icon,
                 p.sort_order as display_order,
                 p.created_at,
                 p.updated_at,
@@ -97,17 +94,16 @@ class PagesModel {
      * Создать новую страницу
      * @param {Object} pageData - Данные страницы
      * @param {string} pageData.slug - Уникальный идентификатор
-     * @param {string} pageData.icon - Иконка
      * @param {number} pageData.sort_order - Порядок сортировки
      * @returns {Promise<Object>} - Созданная страница
      */
-    async createPage({ slug, icon, sort_order = 999 }) {
+    async createPage({ slug, sort_order = 999 }) {
         const query = `
-            INSERT INTO pages (slug, icon, sort_order, is_active)
-            VALUES (?, ?, ?, TRUE)
+            INSERT INTO pages (slug, sort_order, is_active)
+            VALUES (?, ?, TRUE)
         `;
         
-        const [result] = await pool.query(query, [slug, icon, sort_order]);
+        const [result] = await pool.query(query, [slug, sort_order]);
         
         // Получаем созданную страницу
         const [rows] = await pool.query(
@@ -123,17 +119,13 @@ class PagesModel {
      * @param {Object} pageData - Данные для обновления
      * @returns {Promise<Object|null>} - Обновленная страница или null
      */
-    async updatePage(id, { slug, icon, sort_order, is_active }) {
+    async updatePage(id, { slug, sort_order, is_active }) {
         const fields = [];
         const values = [];
 
         if (slug !== undefined) {
             fields.push('slug = ?');
             values.push(slug);
-        }
-        if (icon !== undefined) {
-            fields.push('icon = ?');
-            values.push(icon);
         }
         if (sort_order !== undefined) {
             fields.push('sort_order = ?');
