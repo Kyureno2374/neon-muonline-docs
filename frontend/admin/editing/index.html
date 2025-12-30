@@ -88,6 +88,10 @@
         <div class="frame-30" id="pagesList">
           <!-- Pages will be loaded here -->
         </div>
+        <div class="frame-36" id="languagesManageBtn" style="margin-bottom: 12px;">
+          <img class="gravity-ui-databases" src="https://c.animaapp.com/mjkrezacKyXbCJ/img/gravity-ui-databases.svg" />
+          <div class="text-wrapper-2">Manage Languages</div>
+        </div>
         <div class="frame-36" id="itemsDatabaseBtn">
           <img class="gravity-ui-databases" src="https://c.animaapp.com/mjkrezacKyXbCJ/img/gravity-ui-databases.svg" />
           <div class="text-wrapper-2">Item's database</div>
@@ -142,6 +146,39 @@
               <span>Create</span>
             </button>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Languages Management Modal -->
+    <div class="add-object-modal" id="languagesModal" style="display: none;">
+      <div class="add-object-modal-overlay"></div>
+      <div class="add-object-modal-content" style="max-width: 700px;">
+        <button class="add-object-modal-close" id="closeLanguagesModal">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjQnIGhlaWdodD0nMjQnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nbm9uZScgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz4KPHBhdGggZD0nTTYuNCAxOUw1IDE3LjZMMTAuNiAxMkw1IDYuNEw2LjQgNUwxMiAxMC42TDE3LjYgNUwxOSA2LjRMMTMuNCAxMkwxOSAxNy42TDE3LjYgMTlMMTIgMTMuNEw2LjQgMTlaJyBmaWxsPScjRTNFM0UzJy8+Cjwvc3ZnPgo=" />
+        </button>
+        <div class="add-object-modal-body">
+          <h2 class="add-object-title" style="margin-bottom: 24px;">Manage Languages</h2>
+          
+          <!-- Add New Language Form -->
+          <form class="add-object-form" id="addLanguageForm" style="margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+            <div class="add-object-form-header" style="width: 100%;">
+              <h3 style="font-family: 'Montserrat', Helvetica; font-weight: 600; font-size: 16px; color: rgba(255, 255, 255, 0.9); margin: 0 0 16px 0;">Add New Language</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
+                <input type="text" id="newLangCode" placeholder="Language code (e.g., en, ru)" required maxlength="5" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 2px; color: white; font-family: 'Montserrat', Helvetica; font-size: 14px;" />
+                <input type="text" id="newLangName" placeholder="Language name (e.g., English)" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 2px; color: white; font-family: 'Montserrat', Helvetica; font-size: 14px;" />
+              </div>
+              <input type="text" id="newLangFlag" placeholder="Flag emoji (e.g., 🇬🇧)" maxlength="4" style="width: 100%; padding: 10px; margin-top: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 2px; color: white; font-family: 'Montserrat', Helvetica; font-size: 14px;" />
+            </div>
+            <button type="submit" class="add-object-save-btn">
+              <span>Add Language</span>
+            </button>
+          </form>
+          
+          <!-- Languages List -->
+          <div id="languagesList" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Languages will be loaded here -->
+          </div>
         </div>
       </div>
     </div>

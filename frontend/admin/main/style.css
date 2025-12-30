@@ -587,10 +587,10 @@
     top: 276px;
     left: 120px;
     width: 320px;
-    height: 815px;
+    height: auto; /* allow content to expand */
     background-color: #1728434c;
     border-radius: 2px;
-    overflow: hidden;
+    overflow: visible; /* allow expanded blocks to push content */
   }
   
   .main-page .ellipse-2 {
@@ -621,12 +621,15 @@
     width: 296px;
     min-width: 296px;
     max-width: 296px;
-    height: 661px;
+    height: auto; /* allow nav to grow with expanded blocks */
+    max-height: calc(100vh - 120px); /* keep reasonable max with page header */
     align-items: flex-start;
     gap: 12px;
     position: absolute;
     top: 12px;
-    left: 12px;
+    /* reduce internal left offset so nav items sit closer to edge */
+    left: 8px;
+    overflow-y: auto; /* enable scroll if nav becomes too tall */
   }
   
   .main-page .frame-wrapper {
@@ -869,12 +872,17 @@
   }
   
   .main-page .element-4 {
-    width: 51.57px;
-    height: 41.32px;
-    margin-top: -10.66px;
-    margin-bottom: -10.66px;
+    /* Explicit size requested: 48x20 */
+    width: 48px;
+    height: 20px;
+    min-width: 48px;
+    min-height: 20px;
+    margin-top: 0;
+    margin-bottom: 0;
     position: relative;
-    aspect-ratio: 2.35;
+    aspect-ratio: 2.4; /* 48 / 20 */
+    object-fit: contain;
+    flex-shrink: 0;
   }
   
   .main-page .frame-21 {
@@ -1285,7 +1293,8 @@
   .main-page .language-switcher-wrapper {
     position: relative;
     margin-bottom: 0;
-    width: auto;
+    /* Match editing page: take full available width so switcher aligns with other controls */
+    width: 100%;
     flex-shrink: 0;
   }
 
@@ -1297,6 +1306,8 @@
     gap: 8px;
     padding: 8px 16px;
     position: relative;
+    /* Ensure the button stretches to its wrapper width (same behavior as editing page) */
+    width: 100%;
     border-radius: 2px;
     border: none;
     box-shadow: inset 0px 0px 12.8px #0687c780;
@@ -1491,18 +1502,32 @@
 }
 
 .page-item.expanded .expand-icon {
-  transform: rotate(45deg);
+  transform: rotate(90deg);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .blocks-container {
-  max-height: 0;
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
+  max-height: 0;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  padding: 0;
 }
 
-.blocks-container[style*="display: block"] {
+/* When JS explicitly sets display:block we also expand - keep backward compatibility */
+.blocks-container[style*="display: block"], .blocks-container.open, .blocks-container:not(.collapsed) {
   max-height: 1000px;
   padding: 8px 0;
+  opacity: 1;
+}
+
+/* Collapsed state (for smooth close) */
+.blocks-container.collapsed {
+  max-height: 0 !important;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
 }
 
 .blocks-list {
@@ -1513,10 +1538,19 @@
 }
 
 .block-item {
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border-left: 3px solid #0687c7;
+  display: flex;
+  width: 256px;
+  height: 42px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  position: relative;
+  background-color: #f0f0f033;
   border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: var(--1);
+  backdrop-filter: blur(10px) brightness(100%);
+  -webkit-backdrop-filter: blur(10px) brightness(100%);
   transition: all 0.2s ease;
   animation: slideDown 0.3s ease;
 }
@@ -1819,7 +1853,7 @@
   display: none !important;
 }
 
-.main-page .list-wrapper {
+  .main-page .list-wrapper {
   display: inline-flex;
   height: auto;
   min-height: 32px;
@@ -1828,14 +1862,13 @@
   padding: 10px 24px;
   position: relative;
   flex: 0 0 auto;
-  background-color: transparent;
-  border-radius: 2px;
-  border: 1px solid transparent;
-  border-color: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px; /* Softer border-radius */
+  border: 1px solid rgba(255, 255, 255, 0.7); /* White, soft border */
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  }
 
 .main-page .list-wrapper .p {
   position: relative;
@@ -1940,6 +1973,22 @@
 /* Active page highlight */
 .main-page .frame-15.active {
   background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Search result animation */
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.main-page .search-result {
+  animation: fadeInSlide 0.3s ease-out;
 }
 
 /* Скрываем бургер-меню на десктопе */
@@ -2207,6 +2256,113 @@
     width: calc(100% - 40px) !important;
     margin: 0 20px 15px 20px;
   }
+
+/* ===== Mirror editing page navigation & block styles =====
+   Copied from frontend/admin/editing/style.css to ensure identical
+   behavior: page list, expand icon rotation, blocks container and items.
+*/
+.main-page .frame-29 {
+  display: flex;
+  flex-direction: column;
+  width: 296px;
+  align-items: flex-start;
+  gap: 24px;
+  position: absolute;
+  top: 288px;
+  left: 132px;
+}
+
+.main-page .frame-30 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.main-page .frame-31 {
+  display: flex;
+  height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 10px 24px;
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  background-color: #f0f0f033;
+  border-radius: 2px;
+  border: 1px solid;
+  border-color: #ffffffcc;
+  box-shadow: var(--1);
+  backdrop-filter: blur(10px) brightness(100%);
+  -webkit-backdrop-filter: blur(10px) brightness(100%);
+}
+
+.main-page .arrow-forward-ios {
+  margin-top: -0.89px;
+  margin-bottom: -0.89px;
+  position: relative;
+  flex: 0 0 auto;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-page .arrow-forward-ios.expanded {
+  transform: rotate(90deg);
+}
+
+.main-page .frame-32 {
+  display: flex;
+  width: 256px;
+  height: 42px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 10px 24px;
+  position: relative;
+  background-color: #f0f0f033;
+  border-radius: 2px;
+  border: 1px solid;
+  border-color: #ffffffcc;
+  box-shadow: var(--1);
+  backdrop-filter: blur(10px) brightness(100%);
+  -webkit-backdrop-filter: blur(10px) brightness(100%);
+}
+
+.main-page .blocks-container {
+  /* ensure visible and pushes content like editing */
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+  max-height: none;
+  padding: 8px 0;
+  opacity: 1;
+}
+
+.main-page .blocks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.main-page .block-item {
+  /* match editing visual */
+  display: flex;
+  width: 256px;
+  height: 42px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  position: relative;
+  background-color: #f0f0f033;
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: var(--1);
+  transition: all 0.2s ease;
+  animation: slideDown 0.3s ease;
+}
   
   .main-page .frame-2 {
     position: relative !important;
@@ -2239,5 +2395,29 @@
   .main-page * {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
+  }
+  
+  /* Адаптация element-4 (стрелка раскрытия) */
+  .main-page .element-4 {
+    width: 28px !important;
+    height: 28px !important;
+    flex-shrink: 0;
+    margin: 0 !important;
+  }
+  
+  /* Адаптация названий страниц */
+  .main-page .frame-15 .text-wrapper-3 {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Allow text wrapping */
+    word-wrap: break-word; /* Ensure long words break */
+    max-width: calc(100% - 30px);
+  }
+  
+  /* Для длинных названий - перенос */
+  .main-page .frame-15:hover .text-wrapper-3 {
+    white-space: normal;
+    word-wrap: break-word;
   }
 }

@@ -32,8 +32,174 @@ document.addEventListener('DOMContentLoaded', async () => {
     initLanguageSwitcher();
     initEditButton();
     initMobileMenu();
+    initSearch();
     await loadPages();
 });
+
+// Инициализация поиска
+function initSearch() {
+    const searchInput = document.getElementById('search-input');
+    const searchContainer = searchInput?.parentElement;
+    
+    if (!searchInput) {
+        console.warn('Search input not found');
+        return;
+    }
+    
+    // Анимация при фокусе
+    searchInput.addEventListener('focus', () => {
+        if (searchContainer) {
+            searchContainer.style.transform = 'scale(1.02)';
+            searchContainer.style.boxShadow = '0 0 20px rgba(100, 149, 237, 0.3)';
+        }
+    });
+    
+    searchInput.addEventListener('blur', () => {
+        if (searchContainer) {
+            searchContainer.style.transform = 'scale(1)';
+            searchContainer.style.boxShadow = 'none';
+        }
+    });
+    
+    // Debounced поиск
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            performSearch(e.target.value);
+        }, 300);
+    });
+}
+
+// Выполнить поиск
+function performSearch(query) {
+    const searchQuery = query.toLowerCase().trim();
+    
+    if (!searchQuery) {
+        // Если поиск пустой - показываем все страницы
+        renderPagesList();
+        return;
+    }
+    
+    // Фильтруем страницы по названию
+    const filteredPages = pages.filter(page => {
+        const title = (page.title || page.name || '').toLowerCase();
+        return title.includes(searchQuery);
+    });
+    
+    console.log(`Найдено страниц: ${filteredPages.length} из ${pages.length}`);
+    
+    // Рендерим только найденные страницы
+    renderFilteredPages(filteredPages, searchQuery);
+}
+
+// Рендер отфильтрованных страниц
+function renderFilteredPages(filteredPages, searchQuery) {
+    const frame13 = document.querySelector('.frame-13');
+    if (!frame13) {
+        console.error('Pages list container (frame-13) not found');
+        return;
+    }
+
+    frame13.innerHTML = '';
+
+    if (filteredPages.length === 0) {
+        const noResults = document.createElement('div');
+        noResults.style.cssText = 'padding: 20px; text-align: center; color: rgba(255,255,255,0.5); font-size: 14px;';
+        noResults.textContent = 'No pages found';
+        frame13.appendChild(noResults);
+        return;
+    }
+
+    filteredPages.forEach((page, index) => {
+        const isActive = currentPage && page.id === currentPage.id;
+        const isExpanded = expandedPages.has(page.id);
+        
+        // Кнопка страницы с подсветкой найденного текста
+        const pageLink = document.createElement('div');
+        pageLink.className = isActive ? 'frame-15 active search-result' : 'frame-15 search-result';
+        
+        const pageTitle = page.title || page.name || 'Без названия';
+        const highlightedTitle = highlightSearchQuery(escapeHtml(pageTitle), searchQuery);
+        
+        pageLink.innerHTML = `
+            <span class="text-wrapper-3">${highlightedTitle}</span>
+            <img class="element-4 ${isExpanded ? 'expanded' : ''}" src="https://c.animaapp.com/AWtvtqqH/img/---------1-17@2x.png" alt="" aria-hidden="true" style="transition: transform 0.3s ease; ${isExpanded ? 'transform: rotate(180deg);' : ''}" />
+        `;
+        
+        pageLink.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            
+            // Переключаем раскрытие страницы
+            if (expandedPages.has(page.id)) {
+                // Закрываем текущую страницу
+                expandedPages.delete(page.id);
+                performSearch(searchQuery); // Перерисовываем с поиском
+            } else {
+                // Закрываем все другие страницы и открываем текущую
+                expandedPages.clear();
+                expandedPages.add(page.id);
+                
+                // Загружаем блоки страницы
+                await loadPageBlocks(page);
+            }
+        });
+        
+        // Анимация появления
+        pageLink.style.animation = 'fadeInSlide 0.3s ease-out';
+        
+        frame13.appendChild(pageLink);
+        
+        // Если страница раскрыта, показываем её блоки
+        if (isExpanded && currentPage && page.id === currentPage.id) {
+            const blocksContainer = document.createElement('div');
+            blocksContainer.className = 'blocks-container';
+            
+            // Получаем блоки для этой страницы
+            const pageBlocks = blocks || [];
+            
+            // Показываем блоки (кроме первого - заголовка страницы)
+            if (pageBlocks.length > 1) {
+                pageBlocks.slice(1).forEach(block => {
+                    // Получаем первую строку контента как название блока
+                    const blockContent = block.content || '';
+                    const lines = blockContent.split('\n').filter(line => line.trim());
+                    const blockTitle = lines[0] || `Block ${block.id}`;
+                    
+                    const blockBtn = document.createElement('div');
+                    blockBtn.className = 'frame-16';
+                    blockBtn.innerHTML = `<span class="text-wrapper-3">${escapeHtml(blockTitle)}</span>`;
+                    
+                    blockBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Скролл к блоку по data-block-title
+                        const blockElement = document.querySelector(`[data-block-title="${blockTitle}"]`);
+                        if (blockElement) {
+                            blockElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    });
+                    
+                    blocksContainer.appendChild(blockBtn);
+                });
+            }
+            
+            frame13.appendChild(blocksContainer);
+        }
+    });
+}
+
+// Подсветка найденного текста
+function highlightSearchQuery(text, query) {
+    if (!query) return text;
+    
+    const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
+    return text.replace(regex, '<mark style="background: rgba(100, 149, 237, 0.4); color: white; padding: 2px 4px; border-radius: 2px;">$1</mark>');
+}
+
+// Экранирование специальных символов для regex
+function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 // Инициализация переключателя языков
 function initLanguageSwitcher() {
@@ -286,7 +452,6 @@ function renderPagesList() {
         if (isExpanded && currentPage && page.id === currentPage.id) {
             const blocksContainer = document.createElement('div');
             blocksContainer.className = 'blocks-container';
-            blocksContainer.style.cssText = 'display: flex; flex-direction: column; gap: 12px; padding-left: 12px; margin-top: 12px; animation: slideDown 0.3s ease;';
             
             // Получаем блоки для этой страницы
             const pageBlocks = blocks || [];

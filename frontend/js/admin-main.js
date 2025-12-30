@@ -75,18 +75,49 @@ function renderPagesList() {
 
         header.addEventListener('click', async () => {
             const isExpanded = expandedPages.has(page.id);
-            
+            console.log(`[pages] header click pageId=${page.id}, isExpanded=${isExpanded}`);
+
             if (isExpanded) {
+                // Collapse with animation: add collapsed class, wait for transition to remove 'open'
                 expandedPages.delete(page.id);
-                container.style.display = 'none';
+                container.classList.add('collapsed');
                 header.querySelector('.expand-icon').textContent = '+';
+
+                const onTransitionEnd = (e) => {
+                    if (e.target === container) {
+                        container.classList.remove('open');
+                        container.removeEventListener('transitionend', onTransitionEnd);
+                    }
+                };
+                container.addEventListener('transitionend', onTransitionEnd);
             } else {
+                // Close other open containers first (visual parity with editing)
+                document.querySelectorAll('.blocks-container.open').forEach(other => {
+                    if (other !== container) {
+                        other.classList.add('collapsed');
+                        other.addEventListener('transitionend', function onEnd(e) {
+                            if (e.target === other) {
+                                other.classList.remove('open');
+                                other.removeEventListener('transitionend', onEnd);
+                            }
+                        });
+                    }
+                });
+
+                expandedPages.clear();
                 expandedPages.add(page.id);
-                container.style.display = 'block';
+                currentPageId = page.id;
+                window.history.pushState({}, '', `/admin/editing/index.html?pageId=${page.id}`);
+
+                // Open container
+                container.classList.remove('collapsed');
+                container.classList.add('open');
+                console.log(`[pages] set container.open for pageId=${page.id}`, { container });
                 header.querySelector('.expand-icon').textContent = '−';
-                
+
                 // Загрузить блоки если еще не загружены
                 if (!blocks[page.id]) {
+                    console.log(`[pages] loading blocks for pageId=${page.id}`);
                     await loadBlocksForPage(page.id, blocksList);
                 } else {
                     renderBlocksList(page.id, blocksList);
@@ -101,8 +132,14 @@ function renderPagesList() {
 // Загрузка блоков для страницы
 async function loadBlocksForPage(pageId, blocksList) {
     try {
-        const pageBlocks = await api.adminGetBlocks(pageId, currentLanguage);
+        console.log(`[blocks] loadBlocksForPage start pageId=${pageId}`);
+        const response = await api.adminGetBlocks(pageId, currentLanguage);
+        console.log(`[blocks] api response for pageId=${pageId}:`, response);
+        // API may return { success: true, data: [...] } or an array directly
+        const pageBlocks = (response && Array.isArray(response.data)) ? response.data : (Array.isArray(response) ? response : (response?.data || []));
+        // Ensure we always store an array
         blocks[pageId] = pageBlocks;
+        console.log(`[blocks] loaded ${pageBlocks.length} blocks for pageId=${pageId}`);
         renderBlocksList(pageId, blocksList);
     } catch (error) {
         console.error('Ошибка загрузки блоков:', error);
@@ -112,6 +149,7 @@ async function loadBlocksForPage(pageId, blocksList) {
 
 // Рендер списка блоков
 function renderBlocksList(pageId, blocksList) {
+    console.log(`[blocks] renderBlocksList pageId=${pageId} currentStored=${(blocks[pageId] || []).length}`);
     blocksList.innerHTML = '';
     const pageBlocks = blocks[pageId] || [];
 

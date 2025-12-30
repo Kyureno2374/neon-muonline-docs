@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     initLanguageSwitcher();
     initSearch();
     initMobileMenu();
+    initLanguagesManagement();
+    initItemsDatabaseButton();
     await loadPages();
     
     if (currentPageId) {
@@ -2047,3 +2049,386 @@ window.addEventListener('beforeunload', (e) => {
         return e.returnValue;
     }
 });
+
+// =====================================
+// LANGUAGES MANAGEMENT
+// =====================================
+
+let allLanguages = [];
+
+// Инициализация управления языками
+function initLanguagesManagement() {
+    const languagesBtn = document.getElementById('languagesManageBtn');
+    const languagesModal = document.getElementById('languagesModal');
+    const closeLanguagesModal = document.getElementById('closeLanguagesModal');
+    const addLanguageForm = document.getElementById('addLanguageForm');
+    
+    if (!languagesBtn || !languagesModal) {
+        console.warn('Languages management elements not found');
+        return;
+    }
+    
+    // Открыть модальное окно
+    languagesBtn.addEventListener('click', async () => {
+        await openLanguagesModal();
+    });
+    
+    // Закрыть модальное окно
+    if (closeLanguagesModal) {
+        closeLanguagesModal.addEventListener('click', () => {
+            languagesModal.style.display = 'none';
+        });
+    }
+    
+    // Закрыть по клику на overlay
+    const overlay = languagesModal.querySelector('.add-object-modal-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            languagesModal.style.display = 'none';
+        });
+    }
+    
+    // Форма добавления языка
+    if (addLanguageForm) {
+        addLanguageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addNewLanguage();
+        });
+    }
+}
+
+// Открыть модальное окно управления языками
+async function openLanguagesModal() {
+    const languagesModal = document.getElementById('languagesModal');
+    languagesModal.style.display = 'flex';
+    
+    // Загружаем список языков
+    await loadLanguages();
+}
+
+// Загрузить список языков
+async function loadLanguages() {
+    try {
+        const response = await api.adminGetLanguages();
+        allLanguages = response?.data || response || [];
+        console.log('Загружено языков:', allLanguages.length);
+        renderLanguagesList();
+    } catch (error) {
+        console.error('Ошибка загрузки языков:', error);
+        showLanguagesError('Failed to load languages');
+    }
+}
+
+// Рендер списка языков
+function renderLanguagesList() {
+    const languagesList = document.getElementById('languagesList');
+    if (!languagesList) return;
+    
+    languagesList.innerHTML = '';
+    
+    if (allLanguages.length === 0) {
+        languagesList.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5); font-size: 14px;">
+                No languages found. Add your first language above.
+            </div>
+        `;
+        return;
+    }
+    
+    allLanguages.forEach(lang => {
+        const langItem = document.createElement('div');
+        langItem.style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        `;
+        
+        langItem.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                <span style="font-size: 24px;">${lang.flag_emoji || '🌐'}</span>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="color: #ffffff; font-weight: 500; font-size: 14px;">${escapeHtml(lang.name)}</div>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 12px;">Code: ${escapeHtml(lang.code)}</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="toggle-lang-btn" data-lang-code="${lang.code}" style="
+                    padding: 6px 12px;
+                    background: ${lang.is_active ? 'linear-gradient(180deg, rgba(27, 82, 27, 1) 0%, rgba(64, 152, 64, 1) 52%, rgba(32, 70, 32, 1) 100%)' : 'linear-gradient(180deg, rgba(82, 82, 27, 1) 0%, rgba(152, 152, 64, 1) 52%, rgba(70, 70, 32, 1) 100%)'};
+                    border: 1px solid ${lang.is_active ? 'rgba(100, 255, 100, 0.5)' : 'rgba(255, 255, 100, 0.5)'};
+                    border-radius: 2px;
+                    color: white;
+                    font-size: 12px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    font-family: 'Montserrat', Helvetica;
+                    font-weight: 500;
+                ">
+                    ${lang.is_active ? 'Active' : 'Inactive'}
+                </button>
+                <button class="delete-lang-btn" data-lang-code="${lang.code}" style="
+                    padding: 6px 12px;
+                    background: linear-gradient(180deg, rgba(82, 27, 27, 1) 0%, rgba(152, 64, 64, 1) 52%, rgba(70, 32, 32, 1) 100%);
+                    border: 1px solid rgba(255, 100, 100, 0.5);
+                    border-radius: 2px;
+                    color: white;
+                    font-size: 12px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    font-family: 'Montserrat', Helvetica;
+                    font-weight: 500;
+                ">
+                    Delete
+                </button>
+            </div>
+        `;
+        
+        // Обработчик переключения статуса
+        const toggleBtn = langItem.querySelector('.toggle-lang-btn');
+        toggleBtn.addEventListener('click', async () => {
+            await toggleLanguageStatus(lang.code);
+        });
+        
+        // Обработчик удаления
+        const deleteBtn = langItem.querySelector('.delete-lang-btn');
+        deleteBtn.addEventListener('click', async () => {
+            if (confirm(`Are you sure you want to delete language "${lang.name}"? This action cannot be undone.`)) {
+                await deleteLanguage(lang.code);
+            }
+        });
+        
+        // Hover эффект
+        langItem.addEventListener('mouseenter', () => {
+            langItem.style.background = 'rgba(255,255,255,0.08)';
+            langItem.style.borderColor = 'rgba(255,255,255,0.3)';
+        });
+        
+        langItem.addEventListener('mouseleave', () => {
+            langItem.style.background = 'rgba(255,255,255,0.05)';
+            langItem.style.borderColor = 'rgba(255,255,255,0.2)';
+        });
+        
+        languagesList.appendChild(langItem);
+    });
+}
+
+// Добавить новый язык
+async function addNewLanguage() {
+    const codeInput = document.getElementById('newLangCode');
+    const nameInput = document.getElementById('newLangName');
+    const flagInput = document.getElementById('newLangFlag');
+    
+    const code = codeInput.value.trim().toLowerCase();
+    const name = nameInput.value.trim();
+    const flag = flagInput.value.trim();
+    
+    if (!code || !name) {
+        alert('Please fill in language code and name');
+        return;
+    }
+    
+    // Проверка на дубликаты
+    if (allLanguages.some(lang => lang.code === code)) {
+        alert(`Language with code "${code}" already exists`);
+        return;
+    }
+    
+    try {
+        const languageData = {
+            code: code,
+            name: name,
+            flag_emoji: flag || '🌐',
+            is_active: true
+        };
+        
+        await api.adminCreateLanguage(languageData);
+        
+        // Очищаем форму
+        codeInput.value = '';
+        nameInput.value = '';
+        flagInput.value = '';
+        
+        // Перезагружаем список
+        await loadLanguages();
+        
+        // Обновляем переключатель языков
+        await updateLanguageSwitcher();
+        
+        showLanguagesSuccess(`Language "${name}" added successfully!`);
+    } catch (error) {
+        console.error('Ошибка добавления языка:', error);
+        showLanguagesError('Failed to add language: ' + (error.message || 'Unknown error'));
+    }
+}
+
+// Переключить статус языка
+async function toggleLanguageStatus(langCode) {
+    try {
+        await api.adminToggleLanguage(langCode);
+        await loadLanguages();
+        await updateLanguageSwitcher();
+        showLanguagesSuccess('Language status updated');
+    } catch (error) {
+        console.error('Ошибка переключения статуса языка:', error);
+        showLanguagesError('Failed to toggle language status');
+    }
+}
+
+// Удалить язык
+async function deleteLanguage(langCode) {
+    try {
+        await api.adminDeleteLanguage(langCode);
+        await loadLanguages();
+        await updateLanguageSwitcher();
+        showLanguagesSuccess('Language deleted successfully');
+    } catch (error) {
+        console.error('Ошибка удаления языка:', error);
+        showLanguagesError('Failed to delete language: ' + (error.message || 'Unknown error'));
+    }
+}
+
+// Обновить переключатель языков
+async function updateLanguageSwitcher() {
+    try {
+        const response = await api.adminGetActiveLanguages();
+        const activeLanguages = response?.data || response || [];
+        
+        const dropdown = document.getElementById('languageSwitcherDropdown');
+        if (!dropdown) return;
+        
+        dropdown.innerHTML = '';
+        
+        activeLanguages.forEach(lang => {
+            const option = document.createElement('button');
+            option.className = 'language-switcher-option';
+            option.dataset.lang = lang.code;
+            option.innerHTML = `
+                <span class="language-flag">${lang.flag_emoji || '🌐'}</span>
+                <span class="language-name">${escapeHtml(lang.name)}</span>
+            `;
+            
+            option.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                const selectedLang = this.dataset.lang;
+                
+                if (selectedLang !== currentLanguage) {
+                    currentLanguage = selectedLang;
+                    localStorage.setItem('adminLanguage', currentLanguage);
+                    updateLanguageDisplay();
+                    dropdown.classList.remove('open');
+                    document.getElementById('languageSwitcherBtn').classList.remove('active');
+                    
+                    // Перезагрузить данные
+                    await loadPages();
+                    if (currentPageId) {
+                        await loadPageBlocks(currentPageId);
+                    }
+                }
+            });
+            
+            dropdown.appendChild(option);
+        });
+        
+        // Обновляем отображение текущего языка
+        updateLanguageDisplay();
+    } catch (error) {
+        console.error('Ошибка обновления переключателя языков:', error);
+    }
+}
+
+// Обновить отображение текущего языка
+function updateLanguageDisplay() {
+    const currentLangDisplay = document.getElementById('currentLanguage');
+    const dropdown = document.getElementById('languageSwitcherDropdown');
+    
+    if (currentLangDisplay) {
+        currentLangDisplay.textContent = currentLanguage.toUpperCase();
+    }
+    
+    if (dropdown) {
+        const options = dropdown.querySelectorAll('.language-switcher-option');
+        options.forEach(opt => {
+            if (opt.dataset.lang === currentLanguage) {
+                opt.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+            } else {
+                opt.style.backgroundColor = 'transparent';
+            }
+        });
+    }
+}
+
+// Показать сообщение об успехе
+function showLanguagesSuccess(message) {
+    const languagesList = document.getElementById('languagesList');
+    const successMsg = document.createElement('div');
+    successMsg.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        background: linear-gradient(180deg, rgba(27, 82, 27, 1) 0%, rgba(64, 152, 64, 1) 52%, rgba(32, 70, 32, 1) 100%);
+        border: 1px solid rgba(100, 255, 100, 0.5);
+        border-radius: 4px;
+        color: white;
+        font-size: 14px;
+        font-family: 'Montserrat', Helvetica;
+        z-index: 10000;
+        animation: slideInRight 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+    successMsg.textContent = message;
+    document.body.appendChild(successMsg);
+    
+    setTimeout(() => {
+        successMsg.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => successMsg.remove(), 300);
+    }, 3000);
+}
+
+// Показать сообщение об ошибке
+function showLanguagesError(message) {
+    const languagesList = document.getElementById('languagesList');
+    const errorMsg = document.createElement('div');
+    errorMsg.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        background: linear-gradient(180deg, rgba(82, 27, 27, 1) 0%, rgba(152, 64, 64, 1) 52%, rgba(70, 32, 32, 1) 100%);
+        border: 1px solid rgba(255, 100, 100, 0.5);
+        border-radius: 4px;
+        color: white;
+        font-size: 14px;
+        font-family: 'Montserrat', Helvetica;
+        z-index: 10000;
+        animation: slideInRight 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+    errorMsg.textContent = message;
+    document.body.appendChild(errorMsg);
+    
+    setTimeout(() => {
+        errorMsg.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => errorMsg.remove(), 300);
+    }, 3000);
+}
+
+// Инициализация кнопки Items Database
+function initItemsDatabaseButton() {
+    const itemsDatabaseBtn = document.getElementById('itemsDatabaseBtn');
+    
+    if (!itemsDatabaseBtn) {
+        console.warn('Items Database button not found');
+        return;
+    }
+    
+    // Добавляем обработчик клика для перехода на страницу database
+    itemsDatabaseBtn.addEventListener('click', () => {
+        window.location.href = '/admin/database/index.html';
+    });
+}

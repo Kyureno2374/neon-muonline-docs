@@ -370,6 +370,15 @@ export async function adminUpdateItem(itemId, itemData) {
 }
 
 /**
+ * Удалить предмет
+ */
+export async function adminDeleteItem(itemId) {
+    return apiCall(`/admin/items/${itemId}`, {
+        method: 'DELETE',
+    });
+}
+
+/**
  * Получить все категории предметов (для админки)
  */
 export async function adminGetItemCategories(lang = 'ru') {
